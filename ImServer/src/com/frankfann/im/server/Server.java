@@ -1,4 +1,4 @@
-package com.frankfann.net.server;
+package com.frankfann.im.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
