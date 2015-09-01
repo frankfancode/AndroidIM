@@ -1,4 +1,4 @@
-package com.frankfann.net.server;
+package com.frankfann.im.server;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
