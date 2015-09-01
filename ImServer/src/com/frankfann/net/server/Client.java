@@ -71,7 +71,9 @@ public class Client {
 
    private void setUpNetworking() {  
         try {
-           sock = new Socket("127.0.0.1", 5000);
+           //sock = new Socket("104.207.155.166", 8887);
+           sock = new Socket("127.0.0.1", 8887);
+           
            InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
            reader = new BufferedReader(streamReader);
 
