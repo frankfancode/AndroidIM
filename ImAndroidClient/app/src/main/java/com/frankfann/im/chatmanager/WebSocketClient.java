@@ -32,6 +32,7 @@ import java.util.Map;
 
 public class WebSocketClient {
     private static final String TAG = "WebSocketClient";
+    private String wsType="ws";//wss
 
     private URI                      mURI;
     private Listener                 mListener;
@@ -88,17 +89,17 @@ public class WebSocketClient {
                 try {
                     String secret = createSecret();
 
-                    int port = (mURI.getPort() != -1) ? mURI.getPort() : (mURI.getScheme().equals("wss") ? 443 : 80);
+                    int port = (mURI.getPort() != -1) ? mURI.getPort() : (mURI.getScheme().equals(wsType) ? 443 : 80);
 
                     String path = TextUtils.isEmpty(mURI.getPath()) ? "/" : mURI.getPath();
                     if (!TextUtils.isEmpty(mURI.getQuery())) {
                         path += "?" + mURI.getQuery();
                     }
 
-                    String originScheme = mURI.getScheme().equals("wss") ? "https" : "http";
+                    String originScheme = mURI.getScheme().equals(wsType) ? "https" : "http";
                     URI origin = new URI(originScheme, "//" + mURI.getHost(), null);
 
-                    SocketFactory factory = mURI.getScheme().equals("wss") ? getSSLSocketFactory() : SocketFactory.getDefault();
+                    SocketFactory factory = mURI.getScheme().equals(wsType) ? getSSLSocketFactory() : SocketFactory.getDefault();
                     mSocket = factory.createSocket(mURI.getHost(), port);
 
                     PrintWriter out = new PrintWriter(mSocket.getOutputStream());

@@ -19,6 +19,8 @@ import java.util.List;
  * Created by user on 2015/9/1.
  */
 public class ChatService extends Service {
+    private String urls="wss://104.207.155.166:8887";
+    private String url="ws://104.207.155.166:8887";
     private String TAG="chatmessage";
     private boolean isClose=false;
 
@@ -55,6 +57,7 @@ public class ChatService extends Service {
     }
 
     private void initConnect() {
+        Log.e(TAG, "start initConnect");
         List<BasicNameValuePair> extraHeaders = Arrays.asList(
                 new BasicNameValuePair("Cookie", "session=abcd")
         );
@@ -62,7 +65,7 @@ public class ChatService extends Service {
         HashMap<String ,String> extraHeadersMap=new HashMap<String,String>();
         extraHeadersMap.put("Cookie", "session=abcd");
 
-        WebSocketClient client = new WebSocketClient(URI.create("wss://104.207.155.166:8887"), new WebSocketClient.Listener() {
+        WebSocketClient client = new WebSocketClient(URI.create(url), new WebSocketClient.Listener() {
             @Override
             public void onConnect() {
                 Log.d(TAG, "Connected!");
