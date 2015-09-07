@@ -25,4 +25,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="关闭聊天Service"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="123"/>
+
+
+    </RelativeLayout>
 </LinearLayout>
