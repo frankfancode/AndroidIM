@@ -84,11 +84,13 @@ public class ChatService extends Service {
             @Override
             public void onDisconnect(int code, String reason) {
                 Log.d(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
+                stopSelf();
             }
 
             @Override
             public void onError(Exception error) {
                 Log.e(TAG, "Error!", error);
+                stopSelf();
             }
         }, extraHeadersMap);
 
