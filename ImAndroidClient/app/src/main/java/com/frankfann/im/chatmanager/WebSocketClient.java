@@ -52,7 +52,7 @@ public class WebSocketClient {
         sTrustManagers = tm;
     }
 
-    public WebSocketClient(URI uri, Listener listener, List<BasicNameValuePair> extraHeaders) {
+   /* public WebSocketClient(URI uri, Listener listener, List<BasicNameValuePair> extraHeaders) {
         mURI          = uri;
         mListener = listener;
         mExtraHeaders = extraHeaders;
@@ -61,7 +61,7 @@ public class WebSocketClient {
         mHandlerThread = new HandlerThread("websocket-thread");
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
-    }
+    }*/
 
     public WebSocketClient(URI uri, Listener listener, HashMap<String,String> extraHeadersMap) {
         mURI          = uri;
@@ -75,6 +75,7 @@ public class WebSocketClient {
     }
 
     public Listener getListener() {
+        Log.e(TAG,"getListener");
         return mListener;
     }
 
@@ -99,7 +100,8 @@ public class WebSocketClient {
                     String originScheme = mURI.getScheme().equals(wsType) ? "https" : "http";
                     URI origin = new URI(originScheme, "//" + mURI.getHost(), null);
 
-                    SocketFactory factory = mURI.getScheme().equals(wsType) ? getSSLSocketFactory() : SocketFactory.getDefault();
+                    //SocketFactory factory = mURI.getScheme().equals(wsType) ? getSSLSocketFactory() : SocketFactory.getDefault();
+                    SocketFactory factory = SocketFactory.getDefault();
                     mSocket = factory.createSocket(mURI.getHost(), port);
 
                     PrintWriter out = new PrintWriter(mSocket.getOutputStream());
@@ -125,6 +127,10 @@ public class WebSocketClient {
                     out.flush();
 
                     HybiParser.HappyDataInputStream stream = new HybiParser.HappyDataInputStream(mSocket.getInputStream());
+                    String a;
+                    while (!TextUtils.isEmpty(a=readLine(stream))){
+                        Log.e(TAG, "HappyDataInputStream: " + readLine(stream));
+                    }
 
                     // Read HTTP response status line.
                     StatusLine statusLine = parseStatusLine(readLine(stream));
