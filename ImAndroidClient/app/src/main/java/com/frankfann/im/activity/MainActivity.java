@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.frankfann.im.client.R;
 import com.frankfann.im.service.ChatService;
@@ -14,7 +15,8 @@ import com.frankfann.im.service.ChatService;
 public class MainActivity extends Activity {
     private Activity activity = MainActivity.this;
 
-    private Button bt_start_service,bt_stop_service;
+    private EditText et_sendmessage;
+    private Button bt_start_service, bt_stop_service, btn_send;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,22 +30,25 @@ public class MainActivity extends Activity {
     private void registerListener() {
         bt_start_service.setOnClickListener(clickListener);
         bt_stop_service.setOnClickListener(clickListener);
+        btn_send.setOnClickListener(clickListener);
     }
 
     private void initViews() {
-        bt_start_service=(Button)findViewById(R.id.bt_start_service);
-        bt_stop_service=(Button)findViewById(R.id.bt_stop_service);
+        bt_start_service = (Button) findViewById(R.id.bt_start_service);
+        bt_stop_service = (Button) findViewById(R.id.bt_stop_service);
+        et_sendmessage = (EditText) findViewById(R.id.et_sendmessage);
+        btn_send = (Button) findViewById(R.id.btn_send);
     }
 
-    private View.OnClickListener clickListener=new View.OnClickListener() {
+    private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent=new Intent(MainActivity.this, ChatService.class);
-            switch (v.getId()){
+            Intent intent = new Intent(MainActivity.this, ChatService.class);
+            switch (v.getId()) {
                 case R.id.bt_start_service:
                     try {
                         startService(intent);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -51,12 +56,16 @@ public class MainActivity extends Activity {
                 case R.id.bt_stop_service:
                     stopService(intent);
                     break;
+                case R.id.btn_send:
+                    String message=et_sendmessage.getText().toString();
+                    ChatService.client.send(message);
+                    break;
             }
-
 
 
         }
     };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

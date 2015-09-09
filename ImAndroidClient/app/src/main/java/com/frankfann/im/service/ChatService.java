@@ -23,6 +23,7 @@ public class ChatService extends Service {
     private String url="ws://104.207.155.166:8887";
     private String TAG="chatmessage";
     private boolean isClose=false;
+    public static WebSocketClient client;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -65,7 +66,7 @@ public class ChatService extends Service {
         HashMap<String ,String> extraHeadersMap=new HashMap<String,String>();
         extraHeadersMap.put("Cookie", "session=abcd");
 
-        WebSocketClient client = new WebSocketClient(URI.create(url), new WebSocketClient.Listener() {
+        client = new WebSocketClient(URI.create(url), new WebSocketClient.Listener() {
             @Override
             public void onConnect() {
                 Log.d(TAG, "Connected!");
@@ -79,6 +80,8 @@ public class ChatService extends Service {
             @Override
             public void onMessage(byte[] data) {
                 //Log.d(TAG, String.format("Got binary message! %s", toHexString(data));
+                Log.d(TAG, String.format("%02x", data));
+
             }
 
             @Override
