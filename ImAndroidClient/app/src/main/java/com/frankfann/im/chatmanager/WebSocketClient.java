@@ -17,8 +17,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -80,6 +84,7 @@ public class WebSocketClient {
     }
 
     public void connect() {
+        Log.e(TAG,"contect");
         if (mThread != null && mThread.isAlive()) {
             return;
         }
@@ -127,12 +132,8 @@ public class WebSocketClient {
                     out.flush();
 
                     HybiParser.HappyDataInputStream stream = new HybiParser.HappyDataInputStream(mSocket.getInputStream());
-                    String a;
-                    while (!TextUtils.isEmpty(a=readLine(stream))){
-                        Log.e(TAG, "HappyDataInputStream: " + readLine(stream));
-                    }
 
-                    // Read HTTP response status line.
+                   // Read HTTP response status line.
                     StatusLine statusLine = parseStatusLine(readLine(stream));
                     if (statusLine == null) {
                         throw new HttpException("Received no reply from server.");
@@ -145,6 +146,7 @@ public class WebSocketClient {
                     boolean validated = false;
 
                     while (!TextUtils.isEmpty(line = readLine(stream))) {
+                        Log.e(TAG,"HappyDataInputStream:  "+line);
                         Header header = parseHeader(line);
                         if (header.getName().equals("Sec-WebSocket-Accept")) {
                             String expected = createSecretValidation(secret);
@@ -161,7 +163,7 @@ public class WebSocketClient {
                     if (!validated) {
                         throw new HttpException("No Sec-WebSocket-Accept header.");
                     }
-
+                    Log.e(TAG," mListener.onConnect()");
                     mListener.onConnect();
 
                     // Now decode websocket frames.
@@ -290,5 +292,18 @@ public class WebSocketClient {
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(null, sTrustManagers, null);
         return context.getSocketFactory();
+    }
+    String inputStream2String(InputStream is){
+        BufferedReader in = new BufferedReader(new InputStreamReader(is));
+        StringBuffer buffer = new StringBuffer();
+        String line = "";
+        try {
+            while ((line = in.readLine()) != null){
+                buffer.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buffer.toString();
     }
 }
