@@ -39,8 +39,8 @@ public class ChatServer extends WebSocketServer {
 
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
+		System.out.println("received message from:  "+conn + ": " + message );
 		this.sendToAll( message );
-		System.out.println( conn + ": " + message );
 	}
 
 	public static void main( String[] args ) throws InterruptedException , IOException {
@@ -81,7 +81,9 @@ public class ChatServer extends WebSocketServer {
 		Collection<WebSocket> con = connections();
 		synchronized ( con ) {
 			for( WebSocket c : con ) {
+				System.out.println("send message to:  "+ c + ": " + text );
 				c.send( text );
+				
 			}
 		}
 	}

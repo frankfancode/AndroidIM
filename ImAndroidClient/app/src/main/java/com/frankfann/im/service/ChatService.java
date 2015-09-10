@@ -19,8 +19,10 @@ import java.util.List;
  * Created by user on 2015/9/1.
  */
 public class ChatService extends Service {
-    private String urls="wss://104.207.155.166:8887";
+//    private String urls="wss://104.207.155.166:8887";
     private String url="ws://104.207.155.166:8887";
+    //private String url="ws://192.168.1.112:8887";
+
     private String TAG="chatmessage";
     private boolean isClose=false;
     public static WebSocketClient client;
@@ -69,24 +71,24 @@ public class ChatService extends Service {
         client = new WebSocketClient(URI.create(url), new WebSocketClient.Listener() {
             @Override
             public void onConnect() {
-                Log.d(TAG, "Connected!");
+                Log.e(TAG, "Connected!");
             }
 
             @Override
             public void onMessage(String message) {
-                Log.d(TAG, String.format("Got string message! %s", message));
+                Log.e(TAG, String.format("Got string message! %s", message));
             }
 
             @Override
             public void onMessage(byte[] data) {
-                //Log.d(TAG, String.format("Got binary message! %s", toHexString(data));
-                Log.d(TAG, String.format("%02x", data));
+                //Log.e(TAG, String.format("Got binary message! %s", toHexString(data));
+                Log.e(TAG, String.format("%02x", data));
 
             }
 
             @Override
             public void onDisconnect(int code, String reason) {
-                Log.d(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
+                Log.e(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
                 stopSelf();
             }
 
