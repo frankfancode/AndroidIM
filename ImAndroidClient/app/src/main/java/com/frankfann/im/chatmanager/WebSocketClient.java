@@ -79,7 +79,6 @@ public class WebSocketClient {
     }
 
     public Listener getListener() {
-        Log.e(TAG,"getListener");
         return mListener;
     }
 
