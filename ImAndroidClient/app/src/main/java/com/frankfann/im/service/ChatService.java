@@ -26,6 +26,7 @@ public class ChatService extends Service {
     private String TAG="chatmessage";
     private boolean isClose=false;
     public static WebSocketClient client;
+    private final int ALIVE_INTERVAL_TIME=8*1000;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -72,6 +73,23 @@ public class ChatService extends Service {
             @Override
             public void onConnect() {
                 Log.e(TAG, "Connected!");
+
+                //发送心跳包
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (!isClose){
+                            client.send("t");
+                            try {
+                                Thread.sleep(ALIVE_INTERVAL_TIME);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                }).start();
+
             }
 
             @Override
