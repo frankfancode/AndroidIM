@@ -12,6 +12,8 @@ import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import com.frankfann.im.entity.Chat;
+
 /**
  * A simple WebSocketServer implementation. Keeps track of a "chatroom".
  */
@@ -40,6 +42,7 @@ public class ChatServer extends WebSocketServer {
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
 		System.out.println("received message from:  "+conn + ": " + message );
+		Chat chat=new Chat();
 		this.sendToAll( message );
 	}
 
