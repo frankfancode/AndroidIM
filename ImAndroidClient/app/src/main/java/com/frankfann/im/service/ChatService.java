@@ -3,11 +3,14 @@ package com.frankfann.im.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.text.TextUtils;
 
 import com.frankfann.im.chatmanager.WebSocketClient;
+import com.frankfann.im.entity.Chat;
 import com.frankfann.im.utils.Log;
 
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -95,6 +98,22 @@ public class ChatService extends Service {
             @Override
             public void onMessage(String message) {
                 Log.e(TAG, String.format("Got string message! %s", message));
+                if (TextUtils.isEmpty(message)){
+
+                }else{
+
+                    try {
+                        Chat chat=new Chat(message);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
+                    }
+                }
+
+
+
             }
 
             @Override
