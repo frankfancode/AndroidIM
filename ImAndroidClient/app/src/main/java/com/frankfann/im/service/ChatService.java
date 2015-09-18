@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -29,7 +30,7 @@ public class ChatService extends Service {
     private String TAG="chatmessage";
     private boolean isClose=false;
     public static WebSocketClient client;
-    private final int ALIVE_INTERVAL_TIME=8*1000;
+    private final int ALIVE_INTERVAL_TIME=120*1000;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -71,6 +72,7 @@ public class ChatService extends Service {
 
         HashMap<String ,String> extraHeadersMap=new HashMap<String,String>();
         extraHeadersMap.put("Cookie", "session=abcd");
+        extraHeadersMap.put("userid", UUID.randomUUID().toString());
 
         client = new WebSocketClient(URI.create(url), new WebSocketClient.Listener() {
             @Override
