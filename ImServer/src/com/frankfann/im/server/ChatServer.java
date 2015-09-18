@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
@@ -29,8 +31,14 @@ public class ChatServer extends WebSocketServer {
 
 	@Override
 	public void onOpen( WebSocket conn, ClientHandshake handshake ) {
+		Iterator<String> i=	handshake.iterateHttpFields();
+		while(i.hasNext()){
+			System.out.println("handshake:"+i.next());
+		}
+		System.out.println("conn.hasBufferedData():"+conn.hasBufferedData());
 		this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
 		System.out.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!" );
+		
 	}
 
 	@Override
@@ -60,6 +68,7 @@ public class ChatServer extends WebSocketServer {
 		BufferedReader sysin = new BufferedReader( new InputStreamReader( System.in ) );
 		while ( true ) {
 			String in = sysin.readLine();
+			System.out.println("in:"+in);
 			s.sendToAll( in );
 		}
 	}
