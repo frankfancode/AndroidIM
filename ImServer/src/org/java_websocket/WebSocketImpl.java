@@ -43,7 +43,7 @@ import org.java_websocket.util.Charsetfunctions;
  * 
  */
 public class WebSocketImpl implements WebSocket {
-
+	public String userid="";
 	public static int RCVBUF = 16384;
 
 	public static/* final */boolean DEBUG = true; // must be final in the future
