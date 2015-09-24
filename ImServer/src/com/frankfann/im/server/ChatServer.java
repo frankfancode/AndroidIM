@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.java_websocket.WebSocket;
@@ -15,11 +15,16 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import com.frankfann.im.entity.Chat;
+import com.frankfann.im.server.utils.StringUtils;
 
 /**
  * A simple WebSocketServer implementation. Keeps track of a "chatroom".
  */
 public class ChatServer extends WebSocketServer {
+	
+	
+	
+	
 
 	public ChatServer( int port ) throws UnknownHostException {
 		super( new InetSocketAddress( port ) );
@@ -34,6 +39,10 @@ public class ChatServer extends WebSocketServer {
 		Iterator<String> i=	handshake.iterateHttpFields();
 		while(i.hasNext()){
 			System.out.println("handshake:"+i.next());
+		}
+		String userid=handshake.getFieldValue("userid");
+		if (StringUtils.isNotEmpty(userid)) {
+			setUserMap(userid, conn);
 		}
 		System.out.println("conn.hasBufferedData():"+conn.hasBufferedData());
 		this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
@@ -51,6 +60,7 @@ public class ChatServer extends WebSocketServer {
 	public void onMessage( WebSocket conn, String message ) {
 		System.out.println("received message from:  "+conn + ": " + message );
 		Chat chat=new Chat();
+		
 		this.sendToAll( message );
 	}
 
@@ -99,4 +109,30 @@ public class ChatServer extends WebSocketServer {
 			}
 		}
 	}
+	
+	
+	/**
+	 * 存储用户id和socket的对应关系的map
+	 */
+	private  HashMap<String, WebSocket> userSocketMap;
+	
+	public  WebSocket getSocketByUserId(String userid){
+		if (null==userSocketMap) {
+			return null;
+			
+		}else{
+			return userSocketMap.get(userid);	
+		}
+		
+	}
+	
+	public  void setUserMap(String userid,WebSocket ws){
+		if (null==userSocketMap) {
+			userSocketMap=new HashMap<>();
+		}
+		userSocketMap.put(userid, ws);
+		
+	}
+	
+	
 }

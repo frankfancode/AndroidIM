@@ -1,6 +1,5 @@
 package com.frankfann.im.entity;
 
-import java.util.Objects;
 
 public class Chat {
 	/**
@@ -23,7 +22,8 @@ public class Chat {
 
 	@Override
 	public String toString() {
-		return "Chat [command=" + command + ", message=" + message + ", messageKey=" + messageKey + "]";
+		return "Chat [command=" + command + ", message=" + message
+				+ ", messageKey=" + messageKey + "]";
 	}
 
 }
