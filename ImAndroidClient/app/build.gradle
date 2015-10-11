@@ -1,11 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+def AAVersion = '3.3.2' // change this to your desired version, for example the latest stable: 3.3.2
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.frankfann.im.client"
+        applicationId "com.frankfann.im"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
@@ -19,7 +21,19 @@ android {
     }
 }
 
+
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.1'
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations-api:$AAVersion"
+    compile files('libs/com.socket.respone.yxd.jar')
+    compile files('libs/gson-2.3.1.jar')
+}
+apt {
+    arguments {
+        androidManifestFile variant.outputs[0].processResources.manifestFile
+        resourcePackageName 'com.frankfann.im'
+    }
 }

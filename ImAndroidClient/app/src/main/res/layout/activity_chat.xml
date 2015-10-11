@@ -1,117 +1,84 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="0dp"
+                android:padding="0dp"
+                tools:context="com.frankfann.im.activity.ChatActivity">
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/lv_msg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/bt_start_service"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="启动聊天Service" />
-
-        <Button
-            android:id="@+id/bt_stop_service"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="关闭聊天Service" />
-        <Button
-            android:id="@+id/bt_chat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="聊天界面" />
-
-    </LinearLayout>
-
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bar_bottom"
+        android:divider="#0000">
+    </ListView>
 
     <LinearLayout
         android:id="@+id/bar_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_margin="0dp"
         android:orientation="vertical"
-
+        android:padding="0dp"
         >
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="#C0C0C0" />
+            android:background="#C0C0C0"/>
 
         <LinearLayout
             android:id="@+id/rl_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff"
+            android:layout_gravity="center_vertical"
+            android:background="#eeeeee"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingTop="0dp">
+            android:paddingBottom="0dp"
+            android:paddingTop="2dp">
 
             <Button
                 android:id="@+id/btn_set_mode_voice"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginLeft="6dp"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <Button
-                android:id="@+id/btn_set_mode_keyboard"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginLeft="6dp"
-                android:visibility="gone" />
-
-            <LinearLayout
-                android:id="@+id/btn_press_to_speak"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:layout_marginTop="6dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:textColor="#666666"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                android:id="@+id/btn_more"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/icon_chattype_add"
+                android:visibility="visible"/>
 
             <RelativeLayout
                 android:id="@+id/edittext_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="0dp"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
                 android:layout_weight="1"
                 android:gravity="bottom">
 
                 <EditText
-                    android:id="@+id/et_sendmessage"
+                    android:id="@+id/et_text_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@null"
+                    android:background="#ffffff"
                     android:maxLines="3"
                     android:minHeight="40dp"
-                    android:paddingBottom="3dp"
                     android:paddingLeft="1dp"
                     android:paddingRight="1dp"
                     android:paddingTop="3dp"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
 
                 <ImageView
                     android:id="@+id/iv_emoticons_normal"
@@ -122,7 +89,7 @@
                     android:layout_gravity="center_vertical|right"
                     android:layout_margin="1dip"
                     android:scaleType="fitCenter"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
                 <ImageView
                     android:id="@+id/iv_emoticons_checked"
@@ -133,36 +100,29 @@
                     android:layout_gravity="center_vertical|right"
                     android:layout_margin="1dip"
                     android:scaleType="fitCenter"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/btn_more"
-                android:layout_width="32dip"
-                android:layout_height="32dip"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="10dp"
-                android:visibility="gone"
-                />
 
             <Button
                 android:id="@+id/btn_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="0dp"
                 android:background="#1E90FF"
-
+                android:padding="0dp"
                 android:text="@string/button_send"
                 android:textColor="#ffffff"
                 android:textSize="16sp"
-                android:layout_margin="0dp"
-                android:padding="0dp"
-                android:visibility="visible" />
+                android:visibility="visible"/>
         </LinearLayout>
+
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#C0C0C0" />
+            android:layout_height="1dp"
+            android:background="#C0C0C0"/>
 
         <LinearLayout
             android:id="@+id/more"
@@ -170,7 +130,7 @@
             android:layout_height="wrap_content"
             android:background="#ffffff"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <!-- 表情图片 -->
 
@@ -179,12 +139,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/vPager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <!-- 图片，表情，名片等按钮 -->
@@ -220,14 +180,14 @@
                                 android:layout_height="56dp"
                                 android:layout_centerInParent="true"
                                 android:clickable="true"
-                                android:scaleType="fitCenter" />
+                                android:scaleType="fitCenter"/>
                         </RelativeLayout>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textColor="#727171" />
+                            android:textColor="#727171"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -247,14 +207,14 @@
                                 android:layout_height="56dp"
                                 android:layout_centerInParent="true"
                                 android:clickable="true"
-                                android:scaleType="fitCenter" />
+                                android:scaleType="fitCenter"/>
                         </RelativeLayout>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textColor="#727171" />
+                            android:textColor="#727171"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -274,7 +234,7 @@
                                 android:layout_height="56dp"
                                 android:layout_centerInParent="true"
                                 android:clickable="true"
-                                android:scaleType="fitCenter" />
+                                android:scaleType="fitCenter"/>
                         </RelativeLayout>
 
                         <TextView
@@ -282,7 +242,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
 
-                            android:textColor="#727171" />
+                            android:textColor="#727171"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -302,7 +262,7 @@
                                 android:layout_height="56dp"
                                 android:layout_centerInParent="true"
                                 android:clickable="true"
-                                android:scaleType="fitCenter" />
+                                android:scaleType="fitCenter"/>
                         </RelativeLayout>
 
                         <TextView
@@ -310,7 +270,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:text="视频"
-                            android:textColor="#727171" />
+                            android:textColor="#727171"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -340,7 +300,7 @@
                                 android:layout_centerInParent="true"
 
                                 android:clickable="true"
-                                android:scaleType="fitCenter" />
+                                android:scaleType="fitCenter"/>
                         </RelativeLayout>
 
                         <TextView
@@ -348,7 +308,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
 
-                            android:textColor="#727171" />
+                            android:textColor="#727171"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -370,19 +330,18 @@
                                 android:layout_centerInParent="true"
 
                                 android:clickable="true"
-                                android:scaleType="fitCenter" />
+                                android:scaleType="fitCenter"/>
                         </RelativeLayout>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textColor="#727171" />
+                            android:textColor="#727171"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
 
 </RelativeLayout>
