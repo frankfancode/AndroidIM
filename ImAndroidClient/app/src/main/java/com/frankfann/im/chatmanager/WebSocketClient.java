@@ -7,16 +7,13 @@ import android.util.Base64;
 
 import com.frankfann.im.utils.Log;
 
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.BasicNameValuePair;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -33,6 +30,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 public class WebSocketClient {
     private static final String TAG = "WebSocketClient";
@@ -203,7 +206,11 @@ public class WebSocketClient {
     }
 
     public void send(String data) {
-        sendFrame(mParser.frame(data));
+        if (mSocket.isConnected()){
+            sendFrame(mParser.frame(data));
+        }
+
+
     }
 
     public void send(byte[] data) {

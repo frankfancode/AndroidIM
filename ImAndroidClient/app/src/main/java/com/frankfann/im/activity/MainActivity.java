@@ -9,14 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.frankfann.im.client.R;
+import com.frankfann.im.R;
 import com.frankfann.im.service.ChatService;
 
 public class MainActivity extends Activity {
     private Activity activity = MainActivity.this;
 
     private EditText et_sendmessage;
-    private Button bt_start_service, bt_stop_service, btn_send;
+    private Button bt_start_service, bt_stop_service, btn_send,bt_chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,13 +24,15 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         initViews();
         registerListener();
-
+        Intent intent = new Intent(MainActivity.this, ChatService.class);
+        startService(intent);
     }
 
     private void registerListener() {
         bt_start_service.setOnClickListener(clickListener);
         bt_stop_service.setOnClickListener(clickListener);
         btn_send.setOnClickListener(clickListener);
+        bt_chat.setOnClickListener(clickListener);
     }
 
     private void initViews() {
@@ -38,6 +40,7 @@ public class MainActivity extends Activity {
         bt_stop_service = (Button) findViewById(R.id.bt_stop_service);
         et_sendmessage = (EditText) findViewById(R.id.et_sendmessage);
         btn_send = (Button) findViewById(R.id.btn_send);
+        bt_chat= (Button) findViewById(R.id.bt_chat);
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -59,6 +62,10 @@ public class MainActivity extends Activity {
                 case R.id.btn_send:
                     String message=et_sendmessage.getText().toString();
                     ChatService.client.send(message);
+                    break;
+                case R.id.bt_chat:
+                    Intent chatIntent=new Intent(activity,ChatActivity.class);
+                    startActivity(chatIntent);
                     break;
             }
 
