@@ -19,7 +19,10 @@ import com.frankfann.im.utils.Log;
 
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +34,9 @@ import java.util.List;
 public class ChatService extends Service {
     //    private String urls="wss://104.207.155.166:8887";
     //private String url="ws://104.207.155.166:8887";
-    private String url = "ws://192.168.1.119:8887";
+    //private String url = "ws://192.168.1.119:8887";
+    private String url="ws://192.168.113.248:8887";
+
 
     private static String TAG = "chatmessage";
     private boolean isClose = false;
@@ -79,7 +84,7 @@ public class ChatService extends Service {
         initConnect();
     }
 
-    private void initConnect() {
+    private void initConnect()  {
         Log.e(TAG, "start initConnect");
         List<BasicNameValuePair> extraHeaders = Arrays.asList(
                 new BasicNameValuePair("Cookie", "session=abcd")
@@ -87,8 +92,14 @@ public class ChatService extends Service {
 
         HashMap<String, String> extraHeadersMap = new HashMap<String, String>();
         extraHeadersMap.put("Cookie", "session=abcd");
-        extraHeadersMap.put("userid", APP.getSelf().getUserInfo().userid);
-        extraHeadersMap.put("username", APP.getSelf().getUserInfo().username);
+        try {
+
+            extraHeadersMap.put("userid", URLEncoder.encode(APP.getSelf().getUserInfo().userid, "utf-8"));
+            extraHeadersMap.put("username", URLEncoder.encode(APP.getSelf().getUserInfo().username, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
 
         client = new WebSocketClient(URI.create(url), new WebSocketClient.Listener() {
             @Override

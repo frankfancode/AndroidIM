@@ -24,10 +24,11 @@ import java.util.UUID;
 /**
  * Created by Frank on 2015/9/30.
  */
-public class LoginActivity extends BaseActivity{
+public class LoginActivity extends BaseActivity {
     private Dialog dialog;
+    private ConnectedChatServiceBroadcastReceiver connectedChatServiceBroadcastReceiver;
 
-    private Activity activity=this;
+    private Activity activity = this;
     private EditText etUsername;
     private Button btnSetUsername;
 
@@ -43,64 +44,77 @@ public class LoginActivity extends BaseActivity{
         setView(R.layout.activity_login);
         assignViews();
         registerListener();
+        registerReceiver();
+
     }
 
-    private void registerListener(){
+    private void registerReceiver() {
+        connectedChatServiceBroadcastReceiver = new ConnectedChatServiceBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AppConstants.BC_CONNECT_STATUS);
+        activity.registerReceiver(connectedChatServiceBroadcastReceiver, intentFilter);
+    }
+
+    private void unRegisterReceiver() {
+        activity.unregisterReceiver(connectedChatServiceBroadcastReceiver);
+    }
+
+    private void registerListener() {
         btnSetUsername.setOnClickListener(clickListener);
     }
 
 
-    private View.OnClickListener clickListener =new View.OnClickListener() {
+    private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.btn_set_username:
-                    String username=etUsername.getText().toString();
-                    if (StringUtils.isNullOrEmpty(username)){
-                        Utils.toast(mContext,getString(R.string.setusername));
-                    }else{
-
-                        UserInfo userInfo=new UserInfo();
-                        userInfo.username=username;
-                        userInfo.userid= UUID.randomUUID().toString();
-                        APP.getSelf().setUserInfo(userInfo);
-
-                        ConnectedChatServiceBroadcastReceiver connectedChatServiceBroadcastReceiver=new ConnectedChatServiceBroadcastReceiver();
-                        IntentFilter intentFilter = new IntentFilter();
-                        intentFilter.addAction(AppConstants.BC_CONNECT_STATUS);
-                        activity.registerReceiver(connectedChatServiceBroadcastReceiver, intentFilter);
-                        Intent intentS=new Intent(activity,ChatService.class);
+                    String username = etUsername.getText().toString();
+                    if (StringUtils.isNullOrEmpty(username)) {
+                        Utils.toast(mContext, getString(R.string.setusername));
+                    } else {
+                        Intent intentS = new Intent(activity, ChatService.class);
                         startService(intentS);
-
-                        dialog=Utils.showProcessDialog(activity,getString(R.string.connecting));
-
+                        if (null==dialog||!dialog.isShowing()){
+                            dialog = Utils.showProcessDialog(activity, getString(R.string.connecting));
+                        }
 
                     }
-
-
                     break;
             }
-
-
         }
     };
 
 
-    public class ConnectedChatServiceBroadcastReceiver extends BroadcastReceiver{
+    public class ConnectedChatServiceBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             Utils.dismissProcessDialog(dialog);
-            if (null!=intent&&intent.getBooleanExtra("connect",false)){
-                Intent intentcl=new Intent(activity,ContactsListActivity.class);
+
+            if (null != intent && intent.getBooleanExtra("connect", false)) {
+
+                UserInfo userInfo = new UserInfo();
+                userInfo.username = etUsername.getText().toString();
+                ;
+                userInfo.userid = UUID.randomUUID().toString();
+                APP.getSelf().setUserInfo(userInfo);
+
+                Intent intentcl = new Intent(activity, ContactsListActivity.class);
                 startActivity(intentcl);
                 finish();
-            }else {
-                Utils.toast(activity,getString(R.string.connect_failure));
+            } else {
+                Utils.toast(activity, getString(R.string.connect_failure));
             }
 
 
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Utils.dismissProcessDialog(dialog);
+        unRegisterReceiver();
+    }
 }
