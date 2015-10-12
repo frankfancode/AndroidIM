@@ -317,7 +317,10 @@ public class ChatServer extends WebSocketServer {
 	}
 
 	public void removeUserSocketMapBySocket(WebSocket ws) {
-
+		if (null==userSocketMap||userSocketMap.size()<=0) {
+			return;
+			
+		}
 		Iterator entries = userSocketMap.entrySet().iterator();
 		while (entries.hasNext()) {
 
@@ -334,6 +337,10 @@ public class ChatServer extends WebSocketServer {
 
 	public String getUseridBySocket(WebSocket ws) {
 
+		if (null==userSocketMap||userSocketMap.size()<=0) {
+			return "";
+			
+		}
 		Iterator entries = userSocketMap.entrySet().iterator();
 		while (entries.hasNext()) {
 
