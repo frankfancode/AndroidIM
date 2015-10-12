@@ -3,6 +3,7 @@ package com.frankfann.im.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -51,9 +52,17 @@ public class ChatServer extends WebSocketServer {
 		}
 		String userid = handshake.getFieldValue("userid");
 		String username = handshake.getFieldValue("username");
+		try {
+			username = java.net.URLDecoder.decode(handshake.getFieldValue("username"),"utf-8");
+			userid = java.net.URLDecoder.decode(handshake.getFieldValue("userid"),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Contact contact=new Contact();
 		contact.userid=userid;
 		contact.username=username;
+		System.out.println(contact.toString());
 		addContactMap(userid, contact);
 		
 		if (StringUtils.isNotEmpty(userid)) {
@@ -64,9 +73,7 @@ public class ChatServer extends WebSocketServer {
 
 		System.out.println("conn.hasBufferedData():" + conn.hasBufferedData());
 		this.sendToAll("new connection: " + handshake.getResourceDescriptor());
-		System.out.println(conn.getRemoteSocketAddress().getAddress()
-				.getHostAddress()
-				+ " entered the room!");
+		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress()+ " entered the room!");
 		if (!userList.contains(userid)) {
 			userList.add(userid);
 		}

@@ -60,7 +60,7 @@ public class MainSplashActivity extends BaseActivity {
                 @Override
                 public void onAnimationEnd (Animation animation){ // 动画结束时执行此方法
                     //判断是否已经已登录了
-                    if (!StringUtils.isNullOrEmpty(APP.getSelf().getUserInfo().username)) {
+                    if (!StringUtils.isNullOrEmpty(APP.getSelf().getUserInfo().userid)) {
                         Intent intent = new Intent(activity, ContactsListActivity.class);
                         startActivity(intent);
                         finish();

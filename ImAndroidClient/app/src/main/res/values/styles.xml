@@ -17,6 +17,7 @@
 
     <!-- 进度对话框样式 -->
     <style name="Theme.Light.ProcessDialog.Blue" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/toast_frame</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>
