@@ -33,9 +33,9 @@ import java.util.List;
  */
 public class ChatService extends Service {
     //    private String urls="wss://104.207.155.166:8887";
-    //private String url="ws://104.207.155.166:8887";
+    private String url="ws://104.207.155.166:8887";
     //private String url = "ws://192.168.1.119:8887";
-    private String url="ws://192.168.113.248:8887";
+    //private String url="ws://192.168.113.248:8887";
 
 
     private static String TAG = "chatmessage";

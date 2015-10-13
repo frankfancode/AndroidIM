@@ -8,7 +8,7 @@ public class Chat {
     public final static String RECEIVED="1";
     public final static String SEND="2";
 
-
+    public long _id = 0;
 	/**
 	 * 命令
 	 */
@@ -81,7 +81,6 @@ public class Chat {
 	public Chat ChatFromJson(String json)  {
 		Gson gson = new Gson();
         try {
-            Log.e("chat",json);
             Chat chat=gson.fromJson(json, Chat.class);
             if ("1".equals(chat.receivedorsend)){
                 chat.touserid=chat.fromwho;
@@ -89,7 +88,7 @@ public class Chat {
                 chat.touserid=chat.sendto;
             }
             chat.userid= APP.getSelf().getUserInfo().userid;
-            Log.e("chat",chat.toString());
+            Log.e("chat","ChatFromJson:  "+chat.toString());
             return chat;
         }catch (Exception e){
             e.printStackTrace();

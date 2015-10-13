@@ -33,8 +33,7 @@ import com.google.gson.JsonSyntaxException;
  * A simple WebSocketServer implementation. Keeps track of a "chatroom".
  */
 public class ChatServer extends WebSocketServer {
-	// add()和remove()方法在失败的时候会抛出异常(不推荐)
-	List<String> userList = new ArrayList<>();
+	
 
 	public ChatServer(int port) throws UnknownHostException {
 		super(new InetSocketAddress(port));
@@ -74,9 +73,7 @@ public class ChatServer extends WebSocketServer {
 		System.out.println("conn.hasBufferedData():" + conn.hasBufferedData());
 		this.sendToAll("new connection: " + handshake.getResourceDescriptor());
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress()+ " entered the room!");
-		if (!userList.contains(userid)) {
-			userList.add(userid);
-		}
+
 
 	}
 
@@ -170,7 +167,6 @@ public class ChatServer extends WebSocketServer {
 
 		} else if (ChatCommand.GET_CONTACTS_USERID_RANDOM
 				.equals(chatRequest.command)) {
-			userList= new ArrayList(userSocketMap.keySet());
 			chatResponse = new Chat();
 			chatResponse.command = ChatCommand.GET_CONTACTS_USERID_RANDOM;
 			chatResponse.resultcode = "1";
@@ -240,7 +236,7 @@ public class ChatServer extends WebSocketServer {
 				System.in));
 		while (true) {
 			String in = sysin.readLine();
-			System.out.println("in:" + in);
+			//System.out.println("in:" + in);
 			s.sendToAll(in);
 		}
 	}

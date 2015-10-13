@@ -2,6 +2,7 @@ package com.frankfann.im.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Xml;
 
 import com.frankfann.im.APP;
 import com.frankfann.im.entity.AppConstants;
@@ -13,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -113,17 +115,38 @@ public class ChatDbManager {
     }
 
     /**
-    * @return
+     * 获取一个联系人的未加载的所有信息
+     *
+     * @param touserid
+     * @param _id      查找大于_id 的数据，也就是
+     * @return
+     */
+    public synchronized List<Chat> getNewChatList(String touserid, long _id) {
+        String sql;
+
+        sql = "select * from  (select * from " + chatTable
+                + " where  userid='" + userid + "'"
+                + " and touserid='" + touserid + "' "
+                + " and _id>" + _id
+                + " order by _id desc "
+                + " offset 0) order by _id asc";
+
+
+        return getChatList(sql);
+    }
+
+    /**
+     * @return
      */
     public synchronized Chat getLastChat(Chat c) {
         String sql = "";
         if (null != c) {
             sql = "select *  from " + chatTable
                     + " where  userid='" + userid + "'"
-                    +" and touserid='" + c.touserid + "'"
-                    +" and messageservertime='" + c.messageservertime + "'"
-                    +" and messageid='" + c.messageid + "'"
-                    +" and message='" + c.message + "'";
+                    + " and touserid='" + c.touserid + "'"
+                    + " and messageservertime='" + c.messageservertime + "'"
+                    + " and messageid='" + c.messageid + "'"
+                    + " and message='" + c.message + "'";
 
 
         }
@@ -147,8 +170,11 @@ public class ChatDbManager {
             cursor = mDBManager.open().rawQuery(sql, null);
             if (cursor != null) {
                 cursor.moveToFirst();
-                Type listType = new TypeToken<ArrayList<Chat>>(){}.getType();
+
+                Type listType = new TypeToken<ArrayList<Chat>>() {
+                }.getType();
                 list = new Gson().fromJson(cursorToString(cursor), listType);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
