@@ -31,6 +31,7 @@ public class LoginActivity extends BaseActivity {
     private Activity activity = this;
     private EditText etUsername;
     private Button btnSetUsername;
+    private String userid=UUID.randomUUID().toString();
 
 
     private void assignViews() {
@@ -73,6 +74,13 @@ public class LoginActivity extends BaseActivity {
                     if (StringUtils.isNullOrEmpty(username)) {
                         Utils.toast(mContext, getString(R.string.setusername));
                     } else {
+
+                        UserInfo userInfo = new UserInfo();
+                        userInfo.username = etUsername.getText().toString();
+                        ;
+                        userInfo.userid = userid;
+                        APP.getSelf().setUserInfo(userInfo);
+
                         Intent intentS = new Intent(activity, ChatService.class);
                         startService(intentS);
                         if (null==dialog||!dialog.isShowing()){
@@ -93,17 +101,11 @@ public class LoginActivity extends BaseActivity {
             Utils.dismissProcessDialog(dialog);
 
             if (null != intent && intent.getBooleanExtra("connect", false)) {
-
-                UserInfo userInfo = new UserInfo();
-                userInfo.username = etUsername.getText().toString();
-                ;
-                userInfo.userid = UUID.randomUUID().toString();
-                APP.getSelf().setUserInfo(userInfo);
-
                 Intent intentcl = new Intent(activity, ContactsListActivity.class);
                 startActivity(intentcl);
                 finish();
             } else {
+                APP.getSelf().clearUserInfo(userid);
                 Utils.toast(activity, getString(R.string.connect_failure));
             }
 

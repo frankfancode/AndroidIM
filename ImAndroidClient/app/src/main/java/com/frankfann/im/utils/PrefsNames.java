@@ -6,5 +6,7 @@ package com.frankfann.im.utils;
 public class PrefsNames {
     public static String LOGIN_USERNAME="LoginUserName";
     public static String USERINFO="UserInfo";
+    public static String AUTO_LOGIN="autologin";
+
 
 }
