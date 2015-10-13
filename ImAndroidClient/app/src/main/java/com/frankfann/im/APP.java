@@ -15,22 +15,23 @@ public class APP extends android.app.Application {
     private static APP mApp;
     private EventBus eBus;
     private static UserInfo mUserInfo;
-    private String commandOne ="";
-    private String CommandTwo ="pairsomeonerandom,getcontactsuseridrandom";
+    private String commandOne = "";
+    private String CommandTwo = "pairsomeonerandom,getcontactsuseridrandom";
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         mApp = (APP) getApplicationContext();
-        eBus= new EventBus(commandOne,CommandTwo);
+        eBus = new EventBus(commandOne, CommandTwo);
     }
+
     public static APP getSelf() {
         return mApp;
     }
 
-    public EventBus getEBus(){
-        if (null==eBus) {
+    public EventBus getEBus() {
+        if (null == eBus) {
             eBus = new EventBus(commandOne, CommandTwo);
         }
         return eBus;
@@ -38,14 +39,14 @@ public class APP extends android.app.Application {
 
     /**
      * 得到当前登录的用户信息
+     *
      * @return
      */
     public UserInfo getUserInfo() {
-        if (mUserInfo == null||StringUtils.isNullOrEmpty(mUserInfo.userid)) {
-            SharedPreferences spLogin = this.getSharedPreferences("autologin", Context.MODE_WORLD_READABLE);
+        if (mUserInfo == null || StringUtils.isNullOrEmpty(mUserInfo.userid)) {
+            SharedPreferences spLogin = this.getSharedPreferences(PrefsNames.AUTO_LOGIN, Context.MODE_WORLD_READABLE);
 
-
-            SharedPreferences sp = this.getSharedPreferences("userInfo"+spLogin.getString("autologinuserid",""), Context.MODE_WORLD_READABLE);
+            SharedPreferences sp = this.getSharedPreferences(PrefsNames.USERINFO + spLogin.getString("autologinuserid", ""), Context.MODE_WORLD_READABLE);
             mUserInfo = new UserInfo();
             if (null != sp) {
                 mUserInfo.userid = sp.getString("userid", "");
@@ -58,14 +59,15 @@ public class APP extends android.app.Application {
 
     public boolean setUserInfo(UserInfo userInfo) {
         if (null != userInfo && !StringUtils.isNullOrEmpty(userInfo.userid)) {
-            SharedPreferences sp = getSharedPreferences("userInfo"+userInfo.userid, 0);
+            SharedPreferences sp = getSharedPreferences(PrefsNames.USERINFO + userInfo.userid, 0);
+
             SharedPreferences.Editor ed = sp.edit();
             ed.putString("userid", userInfo.userid);
             ed.putString("username", userInfo.username);
             ed.putString("nickname", userInfo.nickname);
             ed.commit();
 
-            SharedPreferences spLogin = getSharedPreferences("autologin", 0);
+            SharedPreferences spLogin = getSharedPreferences(PrefsNames.AUTO_LOGIN, 0);
             SharedPreferences.Editor edLogin = spLogin.edit();
             edLogin.putString("autologinuserid", userInfo.userid);
             edLogin.commit();
@@ -84,4 +86,19 @@ public class APP extends android.app.Application {
         return "";
     }
 
+    public String clearAutoLogin() {
+        SharedPreferences sp = getSharedPreferences(PrefsNames.LOGIN_USERNAME, 0);
+        if (null != sp) {
+            return sp.getString("loginUsername", "");
+        }
+        return "";
+    }
+
+
+    public void clearUserInfo(String userid) {
+        SharedPreferences sp = getSharedPreferences(PrefsNames.USERINFO + userid, 0);
+        SharedPreferences.Editor editor=sp.edit();
+        editor.clear();
+        editor.commit();
+    }
 }
