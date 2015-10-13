@@ -21,6 +21,7 @@ import com.frankfann.im.APP;
 import com.frankfann.im.R;
 import com.frankfann.im.adapter.ChatAdapter;
 import com.frankfann.im.database.ChatDbManager;
+import com.frankfann.im.entity.AppConstants;
 import com.frankfann.im.entity.Chat;
 import com.frankfann.im.entity.Contact;
 import com.frankfann.im.service.ChatService;
@@ -30,6 +31,7 @@ import com.frankfann.im.utils.StringUtils;
 import com.frankfann.im.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -37,9 +39,12 @@ public class ChatActivity extends BaseActivity {
     private Activity activity = this;
     private Dialog dialog;
     private Contact toContact;
-    private int _id=0;
 
-    private ArrayList<Chat> chatlist = new ArrayList<Chat>();
+    private int PAGE_INDEX=1;
+    private long _id=-1;
+    private boolean hasOldChat=true;
+
+    private List<Chat> chatlist = new ArrayList<Chat>();
     private ChatAdapter chatadapter;
     private ChatDbManager chatDbManager;
 
@@ -140,7 +145,6 @@ public class ChatActivity extends BaseActivity {
                         Utils.toast(mContext, "不能发送空消息！");
                         return;
                     }
-                    Utils.hideSoftKeyBoard(ChatActivity.this);
                     sendMessage(textMessage, ChatCommand.TEXT, null);
                     etTextMessage.setText("");
                     break;
@@ -308,7 +312,36 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ChatService.chatActivity=this;
+        ChatService.chatActivity = this;
+        //每次进入界面都要获取一下聊天记录啊
+        getChatList();
+        
+    }
+
+    private void getChatList() {
+
+        if (1==PAGE_INDEX&&chatlist.size()==0){
+            _id=0;
+            List<Chat> tempList= chatDbManager.getChatList(toContact.userid, _id);
+            if (null==tempList||tempList.size()<AppConstants.PAGE_SIZE){
+                hasOldChat=false;
+            }else{
+                hasOldChat=true;
+            }
+            chatlist.addAll(0,tempList);
+        }else if (1==PAGE_INDEX&&chatlist.size()>0){
+            //去取界面不显示时更新的表数据
+            long new_id=chatlist.get(chatlist.size()-1)._id;
+            chatlist.addAll(chatlist.size(), chatDbManager.getNewChatList(toContact.userid, new_id));
+        }else if(PAGE_INDEX>1){
+            if (chatlist.get(0)._id==_id){
+
+            }
+        }
+
+
+
+
     }
 
     @Override

@@ -101,11 +101,13 @@ public class LoginActivity extends BaseActivity {
             Utils.dismissProcessDialog(dialog);
 
             if (null != intent && intent.getBooleanExtra("connect", false)) {
+                APP.getSelf().setAutoLogin(userid);
                 Intent intentcl = new Intent(activity, ContactsListActivity.class);
                 startActivity(intentcl);
                 finish();
             } else {
-                APP.getSelf().clearUserInfo(userid);
+                APP.getSelf().clearUserInfo();
+                APP.getSelf().clearAutoLogin();
                 Utils.toast(activity, getString(R.string.connect_failure));
             }
 
