@@ -40,9 +40,9 @@ public class ChatActivity extends BaseActivity {
     private Dialog dialog;
     private Contact toContact;
 
-    private int PAGE_INDEX=1;
-    private long _id=-1;
-    private boolean hasOldChat=true;
+    private int PAGE_INDEX = 1;
+    private long _id = -1;
+    private boolean hasOldChat = true;
 
     private List<Chat> chatlist = new ArrayList<Chat>();
     private ChatAdapter chatadapter;
@@ -73,8 +73,6 @@ public class ChatActivity extends BaseActivity {
     private ImageView btnVoiceCall;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,25 +81,25 @@ public class ChatActivity extends BaseActivity {
         registerListener();
         initIntentData();
         initdata();
-        if (StringUtils.isNullOrEmpty(toContact.userid)){
+        if (StringUtils.isNullOrEmpty(toContact.userid)) {
             pairSomeone();
         }
     }
 
     private void initIntentData() {
-        toContact=(Contact)getIntent().getSerializableExtra("tocontact");
+        toContact = (Contact) getIntent().getSerializableExtra("tocontact");
         setTitle(toContact.username);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        toContact=(Contact)getIntent().getSerializableExtra("tocontact");
+        toContact = (Contact) getIntent().getSerializableExtra("tocontact");
         setTitle(toContact.username);
     }
 
     private void assignViews() {
-        lvmsg = (ListView) findViewById(R.id.lv_msg );
+        lvmsg = (ListView) findViewById(R.id.lv_msg);
         barBottom = (LinearLayout) findViewById(R.id.bar_bottom);
         rlBottom = (LinearLayout) findViewById(R.id.rl_bottom);
         btnSetModeVoice = (Button) findViewById(R.id.btn_set_mode_voice);
@@ -129,9 +127,10 @@ public class ChatActivity extends BaseActivity {
     private void registerListener() {
         btnSend.setOnClickListener(clickListener);
     }
+
     private void initdata() {
-        chatDbManager=new ChatDbManager(activity);
-        chatadapter=new ChatAdapter(activity,chatlist);
+        chatDbManager = new ChatDbManager(activity);
+        chatadapter = new ChatAdapter(activity, chatlist);
         lvmsg.setAdapter(chatadapter);
     }
 
@@ -162,11 +161,11 @@ public class ChatActivity extends BaseActivity {
             c.message = textMessage;
             c.command = command;
             c.localdatapath = localDataPath;
-            c.receivedorsend=Chat.SEND;
+            c.receivedorsend = Chat.SEND;
             ChatService.sendMessage(c.toJson());
             chatlist.add(c);
             chatadapter.update(chatlist);
-            lvmsg.smoothScrollToPosition(lvmsg.getCount()-1);
+            lvmsg.smoothScrollToPosition(lvmsg.getCount() - 1);
         }
 
         //HashMap<String, String> map = assembleChatMap(c);;
@@ -277,22 +276,23 @@ public class ChatActivity extends BaseActivity {
                     Utils.toast(activity, message);
                     break;
                 case REFRESH:
-                    Chat msgC= (Chat) msg.obj;
-                    Chat newC=chatDbManager.getLastChat(msgC);
-                    if (null!=newC){
+                    Chat msgC = (Chat) msg.obj;
+                    Chat newC = chatDbManager.getLastChat(msgC);
+                    if (null != newC) {
                         chatlist.add(newC);
 
                         int scrolledX = lvmsg.getScrollX();
                         int scrolledY = lvmsg.getScrollY();
                         chatadapter.update(chatlist);
-                        if (lvmsg.getLastVisiblePosition()>=lvmsg.getCount()-2){//如果当前展示的位置是最后一个或最后第二个，说明滑到了最底部，那么有新消息来时就滑到最后一条
-                            lvmsg.smoothScrollToPosition(lvmsg.getCount()-1);
-                        }else {
+                        if (lvmsg.getLastVisiblePosition() >= lvmsg.getCount() - 2) {//如果当前展示的位置是最后一个或最后第二个，说明滑到了最底部，那么有新消息来时就滑到最后一条
+                            lvmsg.smoothScrollToPosition(lvmsg.getCount() - 1);
+                        } else {
                             lvmsg.scrollTo(scrolledX, scrolledY);
                         }
 
                     }
                     break;
+                case Get_chat_list
             }
 
 
@@ -300,8 +300,8 @@ public class ChatActivity extends BaseActivity {
 
     };
 
-    public void refreshNewChat(Chat chat){
-        if (StringUtils.equals(toContact.userid,chat.fromwho)) {
+    public void refreshNewChat(Chat chat) {
+        if (StringUtils.equals(toContact.userid, chat.fromwho)) {
             Message msg = new Message();
             msg.what = REFRESH;
             msg.obj = chat;
@@ -315,44 +315,68 @@ public class ChatActivity extends BaseActivity {
         ChatService.chatActivity = this;
         //每次进入界面都要获取一下聊天记录啊
         getChatList();
-        
+
     }
 
+    /**
+     * 实际生产不能用这段
+     */
     private void getChatList() {
 
-        if (1==PAGE_INDEX&&chatlist.size()==0){
-            _id=0;
-            List<Chat> tempList= chatDbManager.getChatList(toContact.userid, _id);
-            if (null==tempList||tempList.size()<AppConstants.PAGE_SIZE){
-                hasOldChat=false;
-            }else{
-                hasOldChat=true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (1 == PAGE_INDEX && chatlist.size() == 0) {
+                    _id = 0;
+                    if (chatlist.size() < 200) {//避免chatlist过大
+                        List<Chat> tempList = chatDbManager.getChatList(toContact.userid, _id);
+                        if (null == tempList || tempList.size() < AppConstants.PAGE_SIZE) {
+                            hasOldChat = false;
+                        } else {
+                            hasOldChat = true;
+                        }
+                        chatlist.addAll(0, tempList);
+                    }
+
+                } else if (1 == PAGE_INDEX && chatlist.size() > 0) {
+                    //去取界面不在前台时更新的表数据
+
+
+                } else if (PAGE_INDEX > 1 && PAGE_INDEX < 11) {//最多向上翻十页
+                    if (chatlist.get(0)._id == _id) {
+                        List<Chat> tempList = chatDbManager.getChatList(toContact.userid, _id);
+                        chatlist.addAll(0, tempList);
+                        if (null == tempList || tempList.size() < AppConstants.PAGE_SIZE) {
+                            hasOldChat = false;
+                        } else {
+                            hasOldChat = true;
+                        }
+                    }
+                }
+
+                //新消息总是要刷的
+                long new_id = chatlist.get(chatlist.size() - 1)._id;
+                chatlist.addAll(chatlist.size(), chatDbManager.getNewChatList(toContact.userid, new_id));
+                if (chatlist.size() > 400) {
+                    chatlist = chatlist.subList(chatlist.size() - 401, chatlist.size() - 1);
+                }
+
+
+                handler.sendEmptyMessage()
             }
-            chatlist.addAll(0,tempList);
-        }else if (1==PAGE_INDEX&&chatlist.size()>0){
-            //去取界面不显示时更新的表数据
-            long new_id=chatlist.get(chatlist.size()-1)._id;
-            chatlist.addAll(chatlist.size(), chatDbManager.getNewChatList(toContact.userid, new_id));
-        }else if(PAGE_INDEX>1){
-            if (chatlist.get(0)._id==_id){
-
-            }
-        }
-
-
-
+        });
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        ChatService.chatActivity=null;
+        ChatService.chatActivity = null;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ChatService.chatActivity=null;
+        ChatService.chatActivity = null;
     }
 }
