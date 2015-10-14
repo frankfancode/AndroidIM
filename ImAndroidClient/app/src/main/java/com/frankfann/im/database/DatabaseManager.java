@@ -30,7 +30,6 @@ public class DatabaseManager {
     }
 
     public SQLiteDatabase open() {
-        Log.e("database", "数据库操作=====DatabaseManager open");
         if (!mSqLiteDatabase.isOpen()) {
             mSqLiteDatabase = mDatabaseHelper.getWritableDatabase();
         }
