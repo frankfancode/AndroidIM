@@ -2,7 +2,6 @@ package com.frankfann.im.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Xml;
 
 import com.frankfann.im.APP;
 import com.frankfann.im.entity.AppConstants;
@@ -14,7 +13,6 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlSerializer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -128,7 +126,7 @@ public class ChatDbManager {
                 + " where  userid='" + userid + "'"
                 + " and touserid='" + touserid + "' "
                 + " and _id>" + _id
-                + " order by _id desc "
+                + " order by _id desc  limit 200"
                 + " offset 0) order by _id asc";
 
 
