@@ -6,13 +6,19 @@
                 android:padding="0dp"
                 tools:context="com.frankfann.im.activity.ChatActivity">
 
-    <ListView
-        android:id="@+id/lv_msg"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bar_bottom"
-        android:divider="#0000">
-    </ListView>
+        android:layout_above="@+id/bar_bottom">
+
+        <ListView
+            android:id="@+id/lv_msg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#0000">
+        </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/bar_bottom"

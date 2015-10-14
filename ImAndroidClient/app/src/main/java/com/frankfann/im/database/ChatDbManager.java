@@ -167,7 +167,6 @@ public class ChatDbManager {
             list = new ArrayList<Chat>();
             cursor = mDBManager.open().rawQuery(sql, null);
             if (cursor != null) {
-                cursor.moveToFirst();
 
                 Type listType = new TypeToken<ArrayList<Chat>>() {
                 }.getType();
@@ -184,33 +183,37 @@ public class ChatDbManager {
     private String cursorToString(Cursor crs) {
         JSONArray arr = new JSONArray();
         int nColumns = crs.getColumnCount();
-        JSONObject row = new JSONObject();
-        for (int i = 0; i < nColumns; i++) {
-            String colName = crs.getColumnName(i);
-            if (colName != null) {
-                String val = "";
-                try {
-                    switch (crs.getType(i)) {
-                        case Cursor.FIELD_TYPE_BLOB:
-                            row.put(colName, crs.getBlob(i).toString());
-                            break;
-                        case Cursor.FIELD_TYPE_FLOAT:
-                            row.put(colName, crs.getDouble(i));
-                            break;
-                        case Cursor.FIELD_TYPE_INTEGER:
-                            row.put(colName, crs.getLong(i));
-                            break;
-                        case Cursor.FIELD_TYPE_NULL:
-                            row.put(colName, null);
-                            break;
-                        case Cursor.FIELD_TYPE_STRING:
-                            row.put(colName, crs.getString(i));
-                            break;
-                    }
-                } catch (JSONException e) {
-                }
-            }
+        while (crs.moveToNext()) {
+            JSONObject row = new JSONObject();
+            for (int i = 0; i < nColumns; i++) {
+                String colName = crs.getColumnName(i);
+                if (colName != null) {
+                    String val = "";
+                    try {
 
+                        switch (crs.getType(i)) {
+                            case Cursor.FIELD_TYPE_BLOB:
+                                row.put(colName, crs.getBlob(i).toString());
+                                break;
+                            case Cursor.FIELD_TYPE_FLOAT:
+                                row.put(colName, crs.getDouble(i));
+                                break;
+                            case Cursor.FIELD_TYPE_INTEGER:
+                                row.put(colName, crs.getLong(i));
+                                break;
+                            case Cursor.FIELD_TYPE_NULL:
+                                row.put(colName, null);
+                                break;
+                            case Cursor.FIELD_TYPE_STRING:
+                                row.put(colName, crs.getString(i));
+                                break;
+                        }
+                    } catch (JSONException e) {
+                    }
+                }
+
+
+            }
             arr.put(row);
         }
 

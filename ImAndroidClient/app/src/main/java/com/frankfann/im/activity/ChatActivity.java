@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,9 +32,12 @@ import com.frankfann.im.utils.ChatCommand;
 import com.frankfann.im.utils.Log;
 import com.frankfann.im.utils.StringUtils;
 import com.frankfann.im.utils.Utils;
+import com.frankfann.im.widget.RefreshableView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -41,7 +47,8 @@ public class ChatActivity extends BaseActivity {
     private Contact toContact;
 
     private int PAGE_INDEX = 1;
-    private long _id = -1;
+    private long top_id = -1;//列表最上一条chat 的_id，用于获取老聊天记录时，查找小于 top_id 的chat
+    private long bottom_id = Long.MAX_VALUE;//列表最下一条chat的_id，用于获取新聊天记录时，查找大于 top_id 的chat
     private boolean hasOldChat = true;
 
     private List<Chat> chatlist = new ArrayList<Chat>();
@@ -49,6 +56,7 @@ public class ChatActivity extends BaseActivity {
     private ChatDbManager chatDbManager;
 
     private ListView lvmsg;
+    private SwipeRefreshLayout srlmsg;
     private LinearLayout barBottom;
     private LinearLayout rlBottom;
     private Button btnSetModeVoice;
@@ -99,6 +107,10 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void assignViews() {
+        srlmsg = (SwipeRefreshLayout) findViewById(R.id.srl_msg);
+        srlmsg.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light, android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
         lvmsg = (ListView) findViewById(R.id.lv_msg);
         barBottom = (LinearLayout) findViewById(R.id.bar_bottom);
         rlBottom = (LinearLayout) findViewById(R.id.rl_bottom);
@@ -126,6 +138,8 @@ public class ChatActivity extends BaseActivity {
 
     private void registerListener() {
         btnSend.setOnClickListener(clickListener);
+        lvmsg.setOnScrollListener(onScrollListener);
+        srlmsg.setOnRefreshListener(refreshListener);
     }
 
     private void initdata() {
@@ -165,7 +179,8 @@ public class ChatActivity extends BaseActivity {
             ChatService.sendMessage(c.toJson());
             chatlist.add(c);
             chatadapter.update(chatlist);
-            lvmsg.smoothScrollToPosition(lvmsg.getCount() - 1);
+            //lvmsg.smoothScrollToPosition(lvmsg.getCount() - 1);
+            lvmsg.setSelection(lvmsg.getCount() - 1);
         }
 
         //HashMap<String, String> map = assembleChatMap(c);;
@@ -265,6 +280,8 @@ public class ChatActivity extends BaseActivity {
 
     public static final int JUST_TOAST = 0;
     public static final int REFRESH = 1;
+    public static final int GET_OLD_CHAT_LIST = 2;
+    public static final int GET_NEW_CHAT_LIST = 3;
     Handler handler = new Handler() {
 
         @Override
@@ -284,7 +301,8 @@ public class ChatActivity extends BaseActivity {
                         int scrolledX = lvmsg.getScrollX();
                         int scrolledY = lvmsg.getScrollY();
                         chatadapter.update(chatlist);
-                        if (lvmsg.getLastVisiblePosition() >= lvmsg.getCount() - 2) {//如果当前展示的位置是最后一个或最后第二个，说明滑到了最底部，那么有新消息来时就滑到最后一条
+                        int scrollCount = lvmsg.getLastVisiblePosition() - lvmsg.getFirstVisiblePosition();
+                        if (lvmsg.getLastVisiblePosition() >= lvmsg.getCount() - scrollCount) {//如果当前展示的位置是列表的最后几个，说明滑到了最底部，那么有新消息来时就滑到最后一条
                             lvmsg.smoothScrollToPosition(lvmsg.getCount() - 1);
                         } else {
                             lvmsg.scrollTo(scrolledX, scrolledY);
@@ -292,7 +310,38 @@ public class ChatActivity extends BaseActivity {
 
                     }
                     break;
-                case Get_chat_list
+                case GET_OLD_CHAT_LIST:
+                    List<Chat> oldList = (List<Chat>) msg.obj;
+                    if (null != oldList && oldList.size() > 0) {
+                        chatlist.addAll(0, oldList);
+                        top_id = chatlist.get(0)._id;
+                        chatadapter.notifyDataSetChanged();
+                        if (chatlist.size() == oldList.size()) {
+                            lvmsg.setSelection(chatlist.size() - 1);
+                        } else {
+                            lvmsg.setSelection(oldList.size());
+                            lvmsg.smoothScrollToPositionFromTop(oldList.size(),50);
+                        }
+                        srlmsg.setRefreshing(false);
+
+                    }
+                    break;
+                case GET_NEW_CHAT_LIST:
+                    List<Chat> newList = (List<Chat>) msg.obj;
+                    if (null != newList && newList.size() > 0) {
+                        chatlist.addAll(chatlist.size(), newList);
+                    }
+                    int scrolledX = lvmsg.getScrollX();
+                    int scrolledY = lvmsg.getScrollY();
+                    chatadapter.update(chatlist);
+                    if (lvmsg.getLastVisiblePosition() >= lvmsg.getCount() - 2) {//如果当前展示的位置是最后一个或最后第二个，说明滑到了最底部，那么有新消息来时就滑到最后一条
+                        lvmsg.smoothScrollToPosition(lvmsg.getCount() - 1);
+                    } else {
+                        lvmsg.scrollTo(scrolledX, scrolledY);
+                    }
+                    break;
+
+
             }
 
 
@@ -314,59 +363,61 @@ public class ChatActivity extends BaseActivity {
         super.onResume();
         ChatService.chatActivity = this;
         //每次进入界面都要获取一下聊天记录啊
-        getChatList();
+
+
+        //第一次进入界面，直接取得老数据
+        //chatlist为空就相当于第一次进入界面了
+        //以后再进入界面，就取新数据
+        if (chatlist.size() == 0) {
+            getOldChatList();
+        } else {
+            getNewChatList();
+        }
+
 
     }
 
-    /**
-     * 实际生产不能用这段
-     */
-    private void getChatList() {
+
+    private void getNewChatList() {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (1 == PAGE_INDEX && chatlist.size() == 0) {
-                    _id = 0;
-                    if (chatlist.size() < 200) {//避免chatlist过大
-                        List<Chat> tempList = chatDbManager.getChatList(toContact.userid, _id);
-                        if (null == tempList || tempList.size() < AppConstants.PAGE_SIZE) {
-                            hasOldChat = false;
-                        } else {
-                            hasOldChat = true;
-                        }
-                        chatlist.addAll(0, tempList);
-                    }
-
-                } else if (1 == PAGE_INDEX && chatlist.size() > 0) {
-                    //去取界面不在前台时更新的表数据
 
 
-                } else if (PAGE_INDEX > 1 && PAGE_INDEX < 11) {//最多向上翻十页
-                    if (chatlist.get(0)._id == _id) {
-                        List<Chat> tempList = chatDbManager.getChatList(toContact.userid, _id);
-                        chatlist.addAll(0, tempList);
-                        if (null == tempList || tempList.size() < AppConstants.PAGE_SIZE) {
-                            hasOldChat = false;
-                        } else {
-                            hasOldChat = true;
-                        }
+                if (null == chatlist && chatlist.size() < 1) {
+                    bottom_id = Long.MAX_VALUE;
+                } else {
+                    try {
+                        bottom_id = chatlist.get(chatlist.size() - 1)._id;
+                    } catch (Exception e) {
                     }
                 }
 
-                //新消息总是要刷的
-                long new_id = chatlist.get(chatlist.size() - 1)._id;
-                chatlist.addAll(chatlist.size(), chatDbManager.getNewChatList(toContact.userid, new_id));
-                if (chatlist.size() > 400) {
-                    chatlist = chatlist.subList(chatlist.size() - 401, chatlist.size() - 1);
-                }
-
-
-                handler.sendEmptyMessage()
+                List<Chat> newList = chatDbManager.getNewChatList(toContact.userid, bottom_id);
+                Message msg = Message.obtain();
+                msg.what = GET_NEW_CHAT_LIST;
+                msg.obj = newList;
+                handler.sendMessage(msg);
             }
-        });
+        }).start();
 
     }
+
+    private void getOldChatList() {
+        List<Chat> oldList = null;
+        oldList = chatDbManager.getChatList(toContact.userid, top_id);
+        if (null == oldList || oldList.size() < AppConstants.PAGE_SIZE) {
+            hasOldChat = false;
+        } else {
+            hasOldChat = true;
+        }
+        Message msg = Message.obtain();
+        msg.what = GET_OLD_CHAT_LIST;
+        msg.obj = oldList;
+        handler.sendMessage(msg);
+    }
+
 
     @Override
     protected void onPause() {
@@ -379,4 +430,45 @@ public class ChatActivity extends BaseActivity {
         super.onDestroy();
         ChatService.chatActivity = null;
     }
+
+
+    AbsListView.OnScrollListener onScrollListener = new AbsListView.OnScrollListener() {
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            switch (scrollState) {
+                case SCROLL_STATE_IDLE:
+                    if (view.getFirstVisiblePosition() == 0) {
+
+
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem,
+                             int visibleItemCount, int totalItemCount) {
+
+        }
+    };
+
+
+    SwipeRefreshLayout.OnRefreshListener refreshListener=new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {{
+            if (hasOldChat) {
+                getOldChatList();
+            }
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    srlmsg.setRefreshing(false);
+                }
+            }, 3000);
+        }
+
+        }
+    };
 }
