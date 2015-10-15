@@ -1,6 +1,5 @@
 package com.frankfann.im.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -22,8 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zhy.bean.ImageFloder;
-import com.zhy.imageloader.ListImageDirPopupWindow.OnImageDirSelected;
+import com.frankfann.im.R;
+import com.frankfann.im.media.ImagePickerAdapter;
+import com.frankfann.im.media.ImageFloder;
+import com.frankfann.im.media.ListImageDirPopupWindow;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,7 +33,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-public class ImagePickerActivity extends Activity implements OnImageDirSelected
+public class ImagePickerActivity extends BaseActivity implements ListImageDirPopupWindow.OnImageDirSelected
 {
 	private ProgressDialog mProgressDialog;
 
@@ -50,7 +51,7 @@ public class ImagePickerActivity extends Activity implements OnImageDirSelected
 	private List<String> mImgs;
 
 	private GridView mGirdView;
-	private MyAdapter mAdapter;
+	private ImagePickerAdapter mAdapter;
 	/**
 	 * 临时的辅助类，用于防止同一个文件夹的多次扫描
 	 */
@@ -99,8 +100,8 @@ public class ImagePickerActivity extends Activity implements OnImageDirSelected
 		/**
 		 * 可以看到文件夹的路径和图片的路径分开保存，极大的减少了内存的消耗；
 		 */
-		mAdapter = new MyAdapter(getApplicationContext(), mImgs,
-				R.layout.grid_item, mImgDir.getAbsolutePath());
+		mAdapter = new ImagePickerAdapter(getApplicationContext(), mImgs,
+				R.layout.image_picker_grid_item, mImgDir.getAbsolutePath());
 		mGirdView.setAdapter(mAdapter);
 		mImageCount.setText(totalCount + "张");
 	};
@@ -135,7 +136,7 @@ public class ImagePickerActivity extends Activity implements OnImageDirSelected
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setView(R.layout.activity_image_picker);
 
 		DisplayMetrics outMetrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
@@ -170,7 +171,7 @@ public class ImagePickerActivity extends Activity implements OnImageDirSelected
 				String firstImage = null;
 
 				Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-				ContentResolver mContentResolver = MainActivity.this
+				ContentResolver mContentResolver = ImagePickerActivity.this
 						.getContentResolver();
 
 				// 只查询jpeg和png的图片
@@ -298,8 +299,8 @@ public class ImagePickerActivity extends Activity implements OnImageDirSelected
 		/**
 		 * 可以看到文件夹的路径和图片的路径分开保存，极大的减少了内存的消耗；
 		 */
-		mAdapter = new MyAdapter(getApplicationContext(), mImgs,
-				R.layout.grid_item, mImgDir.getAbsolutePath());
+		mAdapter = new ImagePickerAdapter(getApplicationContext(), mImgs,
+				R.layout.image_picker_grid_item, mImgDir.getAbsolutePath());
 		mGirdView.setAdapter(mAdapter);
 		// mAdapter.notifyDataSetChanged();
 		mImageCount.setText(floder.getCount() + "张");

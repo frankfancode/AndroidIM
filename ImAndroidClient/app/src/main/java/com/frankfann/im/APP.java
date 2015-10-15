@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import com.frankfann.im.entity.UserInfo;
 import com.frankfann.im.utils.PrefsNames;
 import com.frankfann.im.utils.StringUtils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.yxd.socket.respone.EventBus;
 
 /**
@@ -13,21 +15,28 @@ import com.yxd.socket.respone.EventBus;
  */
 public class APP extends android.app.Application {
     private static APP mApp;
-    private EventBus eBus;
     private static UserInfo mUserInfo;
+    private EventBus eBus;
     private String commandOne = "";
     private String CommandTwo = "pairsomeonerandom,getcontactsuseridrandom";
 
+    public static APP getSelf() {
+        return mApp;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         mApp = (APP) getApplicationContext();
         eBus = new EventBus(commandOne, CommandTwo);
-    }
+        //创建默认的ImageLoader配置参数
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .threadPoolSize(3) // default
+                .build();
 
-    public static APP getSelf() {
-        return mApp;
+
+        //Initialize ImageLoader with configuration.
+        ImageLoader.getInstance().init(configuration);
     }
 
     public EventBus getEBus() {
@@ -72,27 +81,25 @@ public class APP extends android.app.Application {
     }
 
     public void clearUserInfo() {
-        SharedPreferences sp = getSharedPreferences(PrefsNames.USERINFO,  Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=sp.edit();
+        SharedPreferences sp = getSharedPreferences(PrefsNames.USERINFO, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
         editor.clear();
         editor.commit();
     }
 
-    public void setAutoLogin(String userid){
-        SharedPreferences spLogin = getSharedPreferences(PrefsNames.AUTO_LOGIN,  Context.MODE_PRIVATE);
+    public void setAutoLogin(String userid) {
+        SharedPreferences spLogin = getSharedPreferences(PrefsNames.AUTO_LOGIN, Context.MODE_PRIVATE);
         SharedPreferences.Editor edLogin = spLogin.edit();
         edLogin.putString("autologinuserid", userid);
         edLogin.commit();
     }
 
-    public void clearAutoLogin(){
-        SharedPreferences spLogin = getSharedPreferences(PrefsNames.AUTO_LOGIN,  Context.MODE_PRIVATE);
+    public void clearAutoLogin() {
+        SharedPreferences spLogin = getSharedPreferences(PrefsNames.AUTO_LOGIN, Context.MODE_PRIVATE);
         SharedPreferences.Editor edLogin = spLogin.edit();
         edLogin.clear();
         edLogin.commit();
     }
-
-
 
 
 }

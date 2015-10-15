@@ -6,15 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -23,21 +26,22 @@ import android.widget.RelativeLayout;
 import com.frankfann.im.APP;
 import com.frankfann.im.R;
 import com.frankfann.im.adapter.ChatAdapter;
+import com.frankfann.im.adapter.ChatBottomGridViewAdapter;
+import com.frankfann.im.adapter.GridViewPagerAdapter;
 import com.frankfann.im.database.ChatDbManager;
 import com.frankfann.im.entity.AppConstants;
 import com.frankfann.im.entity.Chat;
+import com.frankfann.im.entity.ChatMoreTypeItem;
 import com.frankfann.im.entity.Contact;
 import com.frankfann.im.service.ChatService;
 import com.frankfann.im.utils.ChatCommand;
 import com.frankfann.im.utils.Log;
 import com.frankfann.im.utils.StringUtils;
 import com.frankfann.im.utils.Utils;
-import com.frankfann.im.widget.RefreshableView;
+import com.frankfann.im.widget.FixedGridView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -51,12 +55,22 @@ public class ChatActivity extends BaseActivity {
     private long bottom_id = Long.MAX_VALUE;//列表最下一条chat的_id，用于获取新聊天记录时，查找大于 top_id 的chat
     private boolean hasOldChat = true;
 
+    /**
+     * 底部更多种消息类型用到的变量
+     */
+    private int index = 0;
+    private List<GridView> gvList;
+    private GridViewPagerAdapter gvpAdapter;
+    private List<ChatMoreTypeItem> moreTypeList;
+
+
     private List<Chat> chatlist = new ArrayList<Chat>();
     private ChatAdapter chatadapter;
     private ChatDbManager chatDbManager;
 
     private ListView lvmsg;
     private SwipeRefreshLayout srlmsg;
+    private ViewPager vpChatBottom;
     private LinearLayout barBottom;
     private LinearLayout rlBottom;
     private Button btnSetModeVoice;
@@ -88,7 +102,7 @@ public class ChatActivity extends BaseActivity {
         assignViews();
         registerListener();
         initIntentData();
-        initdata();
+        initData();
         if (StringUtils.isNullOrEmpty(toContact.userid)) {
             pairSomeone();
         }
@@ -108,6 +122,7 @@ public class ChatActivity extends BaseActivity {
 
     private void assignViews() {
         srlmsg = (SwipeRefreshLayout) findViewById(R.id.srl_msg);
+        vpChatBottom = (ViewPager) findViewById(R.id.vp_chat_bottom);
         srlmsg.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light, android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -140,12 +155,150 @@ public class ChatActivity extends BaseActivity {
         btnSend.setOnClickListener(clickListener);
         lvmsg.setOnScrollListener(onScrollListener);
         srlmsg.setOnRefreshListener(refreshListener);
+        btnMore.setOnClickListener(clickListener);
+        vpChatBottom.addOnPageChangeListener(pageChangeListener);
     }
 
-    private void initdata() {
+    private void initData() {
         chatDbManager = new ChatDbManager(activity);
         chatadapter = new ChatAdapter(activity, chatlist);
         lvmsg.setAdapter(chatadapter);
+        initMoreType();
+        initGridView();
+        gvpAdapter = new GridViewPagerAdapter(this, gvList);
+        vpChatBottom.setAdapter(gvpAdapter);
+        gvpAdapter.notifyDataSetChanged();
+    }
+
+    private void initGridView() {
+        gvList=new ArrayList<>();
+        final int PageCount = (int) Math.ceil(moreTypeList.size()/8.0f);
+        for (int i = 0; i < PageCount; i++) {
+            FixedGridView gv = new FixedGridView(this);
+            ViewGroup.LayoutParams gvvglp = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            gv.setLayoutParams(gvvglp);
+
+            List<ChatMoreTypeItem> imoreTypeList=null;
+            if (moreTypeList.size()>i*8){
+                imoreTypeList=moreTypeList.subList(i*8,Math.min(i*8+8,moreTypeList.size()));
+            }
+            if (null==imoreTypeList){
+                return;
+            }
+            gv.setAdapter(new ChatBottomGridViewAdapter(activity, imoreTypeList, R.layout.chat_more_type_grid_view_item));
+            gv.setGravity(Gravity.CENTER);
+            gv.setClickable(true);
+            gv.setFocusable(true);
+            gv.setNumColumns(4);
+
+            gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1,
+                                        int arg2, long arg3) {
+
+                    Intent pickImageIntent = new Intent(activity, ImagePickerActivity.class);
+                    startActivityForResult(pickImageIntent, PICK_IMAGE);
+
+                }
+            });
+            gvList.add(gv);
+        }
+    }
+
+    private void initMoreType() {
+        moreTypeList=new ArrayList<>();
+        ChatMoreTypeItem moreTypeItem=new ChatMoreTypeItem();
+        //拍照
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.CAPTURE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_capture;
+        moreTypeItem.chat_bottom_type_title="拍照";
+        moreTypeList.add(moreTypeItem);
+
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+        moreTypeItem=new ChatMoreTypeItem();
+
+        //选择图片
+        moreTypeItem.chat_bottom_type_id= ChatMoreTypeItem.Type.PICKIMAGE;
+        moreTypeItem.chat_bottom_type_icon=R.drawable.icon_chat_image;
+        moreTypeItem.chat_bottom_type_title="图片";
+        moreTypeList.add(moreTypeItem);
+
+
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -161,10 +314,42 @@ public class ChatActivity extends BaseActivity {
                     sendMessage(textMessage, ChatCommand.TEXT, null);
                     etTextMessage.setText("");
                     break;
+                case R.id.btn_more:
+
+                    if (vpChatBottom.getVisibility()==View.GONE){
+                        vpChatBottom.setVisibility(View.VISIBLE);
+                    }else{
+                        vpChatBottom.setVisibility(View.GONE);
+                    }
+
+
+
+                    break;
+
+
             }
         }
     };
 
+    //resultCode的定义
+    private final int PICK_IMAGE = 101;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (Activity.RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case PICK_IMAGE:
+
+                    break;
+
+            }
+
+
+        }
+
+
+    }
 
     private void sendMessage(String textMessage, String command, String localDataPath) {
 
@@ -320,7 +505,7 @@ public class ChatActivity extends BaseActivity {
                             lvmsg.setSelection(chatlist.size() - 1);
                         } else {
                             lvmsg.setSelection(oldList.size());
-                            lvmsg.smoothScrollToPositionFromTop(oldList.size(),50);
+                            lvmsg.smoothScrollToPositionFromTop(oldList.size(), 50);
                         }
                         srlmsg.setRefreshing(false);
 
@@ -454,21 +639,47 @@ public class ChatActivity extends BaseActivity {
     };
 
 
-    SwipeRefreshLayout.OnRefreshListener refreshListener=new SwipeRefreshLayout.OnRefreshListener() {
+    /**
+     * 下拉刷新的监听器
+     */
+    SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
-        public void onRefresh() {{
-            if (hasOldChat) {
-                getOldChatList();
+        public void onRefresh() {
+            {
+                if (hasOldChat) {
+                    getOldChatList();
+                }
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        srlmsg.setRefreshing(false);
+                    }
+                }, 3000);
             }
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    srlmsg.setRefreshing(false);
-                }
-            }, 3000);
         }
+    };
+
+    /**
+     * ViewPager页面选项卡进行切换时候的监听器处理
+     */
+    ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
         }
+
+        @Override
+        public void onPageSelected(int position) {
+            index = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+
     };
 }

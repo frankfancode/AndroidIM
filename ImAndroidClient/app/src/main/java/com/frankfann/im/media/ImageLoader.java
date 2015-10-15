@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
+
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -68,10 +69,10 @@ public class ImageLoader
 	 * @author zhy
 	 * 
 	 */
-	public enum Type
-	{
-		FIFO, LIFO
-	}
+    public enum Type
+    {
+        FIFO, LIFO
+    }
 
 
 	/**
