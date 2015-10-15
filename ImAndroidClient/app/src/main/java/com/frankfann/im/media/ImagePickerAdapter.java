@@ -1,4 +1,4 @@
-package com.frankfann.im.adapter;
+package com.frankfann.im.media;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -6,7 +6,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
-import com.zhy.utils.CommonAdapter;
+
+import com.frankfann.im.R;
+import com.frankfann.im.adapter.CommonAdapter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +34,7 @@ public class ImagePickerAdapter extends CommonAdapter<String>
 	}
 
 	@Override
-	public void convert(final com.zhy.utils.ViewHolder helper, final String item)
+	public void convert(final ViewHolder helper, final String item)
 	{
 		//设置no_pic
 		helper.setImageResource(R.id.id_item_image, R.drawable.pictures_no);

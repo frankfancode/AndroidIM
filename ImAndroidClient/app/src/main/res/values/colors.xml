@@ -7,7 +7,12 @@
     <color name="header_background">#FFFFFF</color>
     <color name="chat_green">#195C7B</color>
     <color name="chat_gray">#52525C</color>
+    <color name="gray_title">#727171</color>
+
     <color name="chat_green2">#092431</color>
     <color name="chat_red">#E83D3D</color>
     <color name="button_blue">#18B4ED</color>
+    <color name="transparent">#00000000</color>
+
+
 </resources>

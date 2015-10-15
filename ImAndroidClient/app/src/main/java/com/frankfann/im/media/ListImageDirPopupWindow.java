@@ -5,15 +5,14 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.frankfann.im.widget.*;
-import com.zhy.bean.ImageFloder;
-import com.zhy.utils.BasePopupWindowForListView;
-import com.zhy.utils.CommonAdapter;
-import com.zhy.utils.ViewHolder;
+
+import com.frankfann.im.R;
+import com.frankfann.im.adapter.CommonAdapter;
 
 import java.util.List;
 
-public class ListImageDirPopupWindow extends com.frankfann.im.widget.BasePopupWindowForListView<ImageFloder>
+
+public class ListImageDirPopupWindow extends BasePopupWindowForListView<ImageFloder>
 {
 	private ListView mListDir;
 
@@ -28,7 +27,7 @@ public class ListImageDirPopupWindow extends com.frankfann.im.widget.BasePopupWi
 	{
 		mListDir = (ListView) findViewById(R.id.id_list_dir);
 		mListDir.setAdapter(new CommonAdapter<ImageFloder>(context, mDatas,
-				R.layout.list_dir_item)
+				R.layout.image_picker_list_dir_item)
 		{
 			@Override
 			public void convert(ViewHolder helper, ImageFloder item)

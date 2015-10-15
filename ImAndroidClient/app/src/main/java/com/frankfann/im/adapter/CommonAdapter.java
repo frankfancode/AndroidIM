@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.frankfann.im.media.ViewHolder;
+
 import java.util.List;
 
 public abstract class CommonAdapter<T> extends BaseAdapter

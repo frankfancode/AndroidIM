@@ -1,4 +1,4 @@
-package com.frankfann.im.entity;
+package com.frankfann.im.media;
 
 public class ImageFloder
 {
