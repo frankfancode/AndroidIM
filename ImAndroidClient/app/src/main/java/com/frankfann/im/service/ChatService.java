@@ -55,6 +55,7 @@ public class ChatService extends Service {
     }
 
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -65,6 +66,7 @@ public class ChatService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        chatservice=this;
     }
 
     @Override
@@ -203,6 +205,7 @@ public class ChatService extends Service {
     }
 
     public static boolean sendMessage(String s) {
+
         Log.e(TAG,"send message: "+s);
         try {
             Chat c=new Chat().ChatFromJson(s);
@@ -214,6 +217,14 @@ public class ChatService extends Service {
             client.send(s);
             return true;
         } else {
+            if (null!=chatservice){
+                chatservice.initConnect();
+                if (null != client && isConnected) {
+                    client.send(s);
+                    return true;
+                }
+            }
+
             return false;
         }
 

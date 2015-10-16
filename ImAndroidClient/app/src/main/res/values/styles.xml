@@ -32,4 +32,15 @@
         <item name="android:windowEnterAnimation">@anim/slide_in</item>
         <item name="android:windowExitAnimation">@anim/slide_out</item>
     </style>
+
+    <!-- listview样式 -->
+    <style name="list">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:dividerHeight">1.0dip</item>
+        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:drawSelectorOnTop">false</item>
+        <item name="android:cacheColorHint">@color/white</item>
+        <item name="android:layout_weight">0.0</item>
+    </style>
 </resources>
