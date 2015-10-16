@@ -370,7 +370,7 @@ public class ChatActivity extends BaseActivity {
         if (Activity.RESULT_OK == resultCode) {
             switch (requestCode) {
                 case PICK_IMAGE:
-
+                    List<String> imagePathList=data.getStringArrayListExtra("imagepaths");
                     break;
 
             }
