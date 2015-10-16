@@ -151,6 +151,8 @@ public class ChatActivity extends BaseActivity {
         btnFile = (ImageView) findViewById(R.id.btn_file);
         containerVoiceCall = (LinearLayout) findViewById(R.id.container_voice_call);
         btnVoiceCall = (ImageView) findViewById(R.id.btn_voice_call);
+
+        etTextMessage.requestFocus();
     }
 
     private void registerListener() {
@@ -160,7 +162,7 @@ public class ChatActivity extends BaseActivity {
         btnMore.setOnClickListener(clickListener);
         vpChatBottom.addOnPageChangeListener(pageChangeListener);
         etTextMessage.setOnClickListener(clickListener);
-        etTextMessage.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+        //etTextMessage.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
 
     private void initData() {
@@ -348,8 +350,6 @@ public class ChatActivity extends BaseActivity {
 
 
     private void setBottomVisiable(int visiableType){
-        Log.e("high", "llMore" + llMore.getVisibility() + "  " + llMore.getHeight());
-        Log.e("high", "llMore" + llMore.getVisibility() + "  " + llMore.getMeasuredHeight());
         if (View.VISIBLE==visiableType){
             Utils.hideSoftKeyBoard(activity);
             llMore.setVisibility(View.VISIBLE);
@@ -713,4 +713,7 @@ public class ChatActivity extends BaseActivity {
         }
 
     };
+
+
+
 }

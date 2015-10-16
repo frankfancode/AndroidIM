@@ -218,13 +218,9 @@ public class ChatService extends Service {
             return true;
         } else {
             if (null!=chatservice){
-                chatservice.initConnect();
-                if (null != client && isConnected) {
-                    client.send(s);
-                    return true;
-                }
-            }
 
+            }
+            chatservice.initConnect();
             return false;
         }
 
