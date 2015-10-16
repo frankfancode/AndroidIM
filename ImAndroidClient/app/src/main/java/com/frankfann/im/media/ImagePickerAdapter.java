@@ -49,7 +49,7 @@ public class ImagePickerAdapter extends CommonAdapter<String>
 		
 		mImageView.setColorFilter(null);
 		//设置ImageView的点击事件
-		mImageView.setOnClickListener(new OnClickListener()
+		/*mImageView.setOnClickListener(new OnClickListener()
 		{
 			//选择，则将图片变暗，反之则反之
 			@Override
@@ -71,7 +71,7 @@ public class ImagePickerAdapter extends CommonAdapter<String>
 				}
 
 			}
-		});
+		})*/;
 		
 		/**
 		 * 已经选择过的图片，显示出选择过的效果
