@@ -34,10 +34,13 @@ import java.util.UUID;
  */
 public class ContactsListActivity extends BaseActivity {
 
+
+    private TextView tv_status;
     private List<Contact> contactList;
     private ListView lvContacts;
     private ContactsListAdapter contactsListAdapter;
 
+    private int cCount=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +59,12 @@ public class ContactsListActivity extends BaseActivity {
 
 
     private void assignViews() {
+        tv_status=(TextView)findViewById(R.id.tv_status);
         lvContacts = (ListView) findViewById(R.id.lv_contacts);
     }
 
     private void initData() {
+        tv_status.setText("正在获取在线联系人");
         contactList = new ArrayList<Contact>();
         contactsListAdapter = new ContactsListAdapter(mContext, contactList);
         lvContacts.setAdapter(contactsListAdapter);
@@ -68,9 +73,17 @@ public class ContactsListActivity extends BaseActivity {
 
     private void registerListener() {
         lvContacts.setOnItemClickListener(onItemClickListener);
+        tv_status.setOnClickListener(clickListener);
 
     }
 
+    View.OnClickListener clickListener=new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            tv_status.setText("正在获取在线联系人");
+            getData();
+        }
+    };
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
@@ -153,6 +166,8 @@ public class ContactsListActivity extends BaseActivity {
     }
 
     public void getcontactsuseridrandomEnd(String string) {
+        //contactList.clear();
+        handler.sendEmptyMessage(GET_CONTACTS_DONE);
         Log.e("ebus", "End=====" + string);
 
     }
@@ -198,6 +213,8 @@ public class ContactsListActivity extends BaseActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case GET_CONTACTS_DONE:
+                    cCount=contactList.size();
+                    tv_status.setText("目前在线 "+cCount+" 人");
                     contactsListAdapter.update(contactList);
                     break;
 

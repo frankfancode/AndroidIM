@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -36,6 +37,7 @@ import com.frankfann.im.entity.Contact;
 import com.frankfann.im.service.ChatService;
 import com.frankfann.im.utils.ChatCommand;
 import com.frankfann.im.utils.Log;
+import com.frankfann.im.utils.MyAnimationUtils;
 import com.frankfann.im.utils.StringUtils;
 import com.frankfann.im.utils.Utils;
 import com.frankfann.im.widget.FixedGridView;
@@ -82,7 +84,7 @@ public class ChatActivity extends BaseActivity {
     private ImageView ivEmoticonsChecked;
     private Button btnMore;
     private Button btnSend;
-    private LinearLayout more;
+    private LinearLayout llMore;
     private LinearLayout llFaceContainer;
     private ViewPager vPager;
     private LinearLayout llBtnContainer;
@@ -138,7 +140,7 @@ public class ChatActivity extends BaseActivity {
         ivEmoticonsChecked = (ImageView) findViewById(R.id.iv_emoticons_checked);
         btnMore = (Button) findViewById(R.id.btn_more);
         btnSend = (Button) findViewById(R.id.btn_send);
-        more = (LinearLayout) findViewById(R.id.more);
+        llMore = (LinearLayout) findViewById(R.id.ll_more);
         llFaceContainer = (LinearLayout) findViewById(R.id.ll_face_container);
         vPager = (ViewPager) findViewById(R.id.vPager);
         llBtnContainer = (LinearLayout) findViewById(R.id.ll_btn_container);
@@ -157,6 +159,8 @@ public class ChatActivity extends BaseActivity {
         srlmsg.setOnRefreshListener(refreshListener);
         btnMore.setOnClickListener(clickListener);
         vpChatBottom.addOnPageChangeListener(pageChangeListener);
+        etTextMessage.setOnClickListener(clickListener);
+        etTextMessage.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
 
     private void initData() {
@@ -169,6 +173,14 @@ public class ChatActivity extends BaseActivity {
         vpChatBottom.setAdapter(gvpAdapter);
         gvpAdapter.notifyDataSetChanged();
     }
+
+
+    ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener=new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+
+        }
+    };
 
     private void initGridView() {
         gvList=new ArrayList<>();
@@ -314,15 +326,18 @@ public class ChatActivity extends BaseActivity {
                     sendMessage(textMessage, ChatCommand.TEXT, null);
                     etTextMessage.setText("");
                     break;
+                case  R.id.et_text_message:
+                    setBottomVisiable(View.GONE);
+                    break;
                 case R.id.btn_more:
-
-                    if (vpChatBottom.getVisibility()==View.GONE){
-                        vpChatBottom.setVisibility(View.VISIBLE);
+                    int scrolledX = lvmsg.getScrollX();
+                    int scrolledY = lvmsg.getScrollY();
+                    if (View.VISIBLE==llMore.getVisibility()){
+                        setBottomVisiable(View.GONE);
                     }else{
-                        vpChatBottom.setVisibility(View.GONE);
+                        setBottomVisiable(View.VISIBLE);
                     }
-
-
+                    lvmsg.scrollTo(scrolledX, scrolledY);
 
                     break;
 
@@ -330,6 +345,21 @@ public class ChatActivity extends BaseActivity {
             }
         }
     };
+
+
+    private void setBottomVisiable(int visiableType){
+        Log.e("high", "llMore" + llMore.getVisibility() + "  " + llMore.getHeight());
+        Log.e("high", "llMore" + llMore.getVisibility() + "  " + llMore.getMeasuredHeight());
+        if (View.VISIBLE==visiableType){
+            Utils.hideSoftKeyBoard(activity);
+            llMore.setVisibility(View.VISIBLE);
+        }else if(View.GONE==visiableType){
+            llMore.setVisibility(View.GONE);
+        }
+
+    }
+
+
 
     //resultCode的定义
     private final int PICK_IMAGE = 101;
@@ -621,6 +651,7 @@ public class ChatActivity extends BaseActivity {
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
+            setBottomVisiable(View.GONE);
             switch (scrollState) {
                 case SCROLL_STATE_IDLE:
                     if (view.getFirstVisiblePosition() == 0) {

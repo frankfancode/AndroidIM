@@ -6,19 +6,23 @@
                 android:padding="0dp"
                 tools:context="com.frankfann.im.activity.ChatActivity">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/srl_msg"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/bar_bottom">
 
-        <ListView
-            android:id="@+id/lv_msg"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl_msg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="#0000">
-        </ListView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/lv_msg"
+                style="@style/list"
+                android:divider="#0000">
+            </ListView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bar_bottom"
@@ -84,6 +88,7 @@
                     android:paddingLeft="1dp"
                     android:paddingRight="1dp"
                     android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     android:textSize="16sp"/>
 
                 <ImageView
@@ -127,16 +132,16 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.1dp"
             android:background="#C0C0C0"/>
 
         <LinearLayout
-            android:id="@+id/more"
+            android:id="@+id/ll_more"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ffffff"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <com.frankfann.im.widget.WrapContentHeightViewPager
                 android:id="@+id/vp_chat_bottom"
