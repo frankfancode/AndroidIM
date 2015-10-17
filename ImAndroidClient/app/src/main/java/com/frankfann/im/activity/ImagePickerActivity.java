@@ -38,7 +38,6 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ImagePickerActivity extends BaseActivity implements ListImageDirPopupWindow.OnImageDirSelected {
@@ -373,7 +372,6 @@ public class ImagePickerActivity extends BaseActivity implements ListImageDirPop
 
     @Override
     protected void handleHeaderEventRight(View view) {
-
         Intent intent=new Intent(mContext,ChatActivity.class);
         intent.putStringArrayListExtra("imagepaths", (ArrayList<String>) mSelectedImage);
         setResult(RESULT_OK,intent);

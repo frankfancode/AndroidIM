@@ -2,10 +2,14 @@ package com.frankfann.im.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Gravity;
@@ -37,7 +41,6 @@ import com.frankfann.im.entity.Contact;
 import com.frankfann.im.service.ChatService;
 import com.frankfann.im.utils.ChatCommand;
 import com.frankfann.im.utils.Log;
-import com.frankfann.im.utils.MyAnimationUtils;
 import com.frankfann.im.utils.StringUtils;
 import com.frankfann.im.utils.Utils;
 import com.frankfann.im.widget.FixedGridView;
@@ -208,13 +211,37 @@ public class ChatActivity extends BaseActivity {
             gv.setFocusable(true);
             gv.setNumColumns(4);
 
+            final List<ChatMoreTypeItem> finalImoreTypeList = imoreTypeList;
             gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View arg1,
-                                        int arg2, long arg3) {
+                                        int position, long arg3) {
+                    if (ChatMoreTypeItem.Type.CAPTURE== finalImoreTypeList.get(position).chat_bottom_type_id){
+                        String SDState = Environment.getExternalStorageState();
+                        if(SDState.equals(Environment.MEDIA_MOUNTED))
+                        {
 
-                    Intent pickImageIntent = new Intent(activity, ImagePickerActivity.class);
-                    startActivityForResult(pickImageIntent, PICK_IMAGE);
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//"android.media.action.IMAGE_CAPTURE"
+                            /***
+                             * 需要说明一下，以下操作使用照相机拍照，拍照后的图片会存放在相册中的
+                             * 这里使用的这种方式有一个好处就是获取的图片是拍照后的原图
+                             * 如果不实用ContentValues存放照片路径的话，拍照后获取的图片为缩略图不清晰
+                             */
+                            ContentValues values = new ContentValues();
+                            Uri photoUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoUri);
+                            /**-----------------*/
+                            startActivityForResult(intent, CAPTURE);
+                        }else{
+                            Utils.toast(activity,"内存卡不存在");
+                        }
+
+
+                    }else if (ChatMoreTypeItem.Type.PICKIMAGE== finalImoreTypeList.get(position).chat_bottom_type_id){
+                        Intent pickImageIntent = new Intent(activity, ImagePickerActivity.class);
+                        startActivityForResult(pickImageIntent, PICK_IMAGE);
+                    }
+
 
                 }
             });
@@ -363,6 +390,7 @@ public class ChatActivity extends BaseActivity {
 
     //resultCode的定义
     private final int PICK_IMAGE = 101;
+    private final int CAPTURE = PICK_IMAGE +1 ;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -371,6 +399,8 @@ public class ChatActivity extends BaseActivity {
             switch (requestCode) {
                 case PICK_IMAGE:
                     List<String> imagePathList=data.getStringArrayListExtra("imagepaths");
+
+
                     break;
 
             }
