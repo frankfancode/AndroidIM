@@ -1,3 +1,6 @@
+包括聊天服务器和 Android 客户端
+
+
 **关键字**
 WebSocket https://github.com/TooTallNate/Java-WebSocket/wiki
 android-websockets https://github.com/codebutler/android-websockets
