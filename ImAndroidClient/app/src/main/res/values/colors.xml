@@ -11,8 +11,11 @@
 
     <color name="chat_green2">#092431</color>
     <color name="chat_red">#E83D3D</color>
-    <color name="button_blue">#18B4ED</color>
+    <color name="button_blue">#1FBAF3</color>
     <color name="transparent">#00000000</color>
+    <color name="gray_background">#ECEDF1</color>
+    <color name="devide_line">#CBCED2</color>
+
 
 
 </resources>

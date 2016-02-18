@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/bottom_bar_group"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RelativeLayout style="@style/BottomBar">
+
+            <ImageButton
+                android:id="@+id/ib_bottom_session"
+                style="@style/BottomBarImgBtn"
+                android:background="@drawable/bar_news"
+                android:contentDescription="@string/app_name" />
+        </RelativeLayout>
+
+        <RelativeLayout style="@style/BottomBar">
+
+            <ImageButton
+                android:id="@+id/ib_bottom_constact"
+                style="@style/BottomBarImgBtn"
+                android:background="@drawable/bar_constact"
+                android:contentDescription="@string/app_name" />
+        </RelativeLayout>
+
+        <RelativeLayout style="@style/BottomBar">
+
+            <ImageButton
+                android:id="@+id/ib_bottom_deynaimic"
+                style="@style/BottomBarImgBtn"
+                android:background="@drawable/bar_deynaimic"
+                android:contentDescription="@string/app_name" />
+        </RelativeLayout>
+
+        <RelativeLayout style="@style/BottomBar">
+
+            <ImageButton
+                android:id="@+id/ib_bottom_setting"
+                style="@style/BottomBarImgBtn"
+                android:background="@drawable/bar_setting"
+                android:contentDescription="@string/app_name" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="6dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp">
+
+        <com.frankfancode.im.widget.CircleImageView
+            android:id="@+id/chat_item_avatar"
+            style="@style/portrait_small"
+            android:layout_alignParentLeft="true" />
+
+        <LinearLayout
+            android:id="@+id/chat_item_content"
+            style="@style/chat_item_content"
+            android:layout_toRightOf="@id/chat_item_avatar"
+            android:background="@drawable/message_left"
+            android:orientation="vertical"></LinearLayout>
+
+        <ImageView
+            android:id="@+id/chat_item_fail"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/chat_item_content"
+            android:background="@drawable/msg_state_fail_resend"
+            android:focusable="false"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/chat_item_progress"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/chat_item_content"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</LinearLayout>

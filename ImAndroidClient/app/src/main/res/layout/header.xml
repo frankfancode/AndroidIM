@@ -20,7 +20,10 @@
             android:focusable="false"
             android:gravity="center"
             android:lines="1"
-            android:padding="5dip"
+
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dip"
             android:text="返回"
             android:textColor="@color/white"
             android:textSize="18.0sp"
@@ -40,6 +43,8 @@
             android:id="@+id/tv_header_middle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:text=""
             android:textColor="@android:color/white"
             android:textSize="20.0sp"
@@ -53,6 +58,7 @@
         android:layout_alignParentRight="true"
         android:orientation="horizontal"
         android:visibility="visible">
+
         <TextView
             android:id="@+id/tv_header_right"
             android:layout_width="wrap_content"
@@ -61,8 +67,9 @@
             android:focusable="false"
             android:gravity="center"
             android:lines="1"
-            android:padding="5.0dip"
-            android:text="退出"
+            android:paddingBottom="5dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
             android:textColor="@color/white"
             android:textSize="18.0sp"
             android:textStyle="bold" />

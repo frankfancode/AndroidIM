@@ -4,14 +4,24 @@ def AAVersion = '3.3.2' // change this to your desired version, for example the 
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
-        applicationId "com.frankfann.im"
+        applicationId "com.frankfancode.im"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+
+        buildConfigField("boolean", "ISTEST", "${istest}")
+        buildConfigField("String", "CHAT_SERVER_RELEASE", "\"${chat_server_release}\"")
+        buildConfigField("String", "BUISNESS_SERVER_RELEASE", "\"${buisness_server_release}\"")
+        buildConfigField("String", "FILE_SERVER_RELEASE", "\"${file_server_release}\"")
+        buildConfigField("String", "CHAT_SERVER_TEST", "\"${chat_server_test}\"")
+        buildConfigField("String", "BUISNESS_SERVER_TEST", "\"${buisness_server_test}\"")
+        buildConfigField("String", "FILE_SERVER_TEST", "\"${file_server_test}\"")
+
+
     }
     buildTypes {
         release {
@@ -19,23 +29,46 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+
 }
 
 
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    apt "org.androidannotations:androidannotations:$AAVersion"
-    compile "org.androidannotations:androidannotations-api:$AAVersion"
     compile files('libs/com.socket.respone.yxd.jar')
     compile files('libs/gson-2.3.1.jar')
     compile files('libs/universal-image-loader-1.9.4.jar')
     compile files('libs/commons-net-3.3.jar')
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:design:22.2.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.squareup.okhttp3:okhttp:3.0.1'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.0.1'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'io.reactivex:rxandroid:1.1.0'
+// Because RxAndroid releases are few and far between, it is recommended you also
+// explicitly depend on RxJava's latest version for bug fixes and new features.
+    compile 'io.reactivex:rxjava:1.1.0'
+    testCompile 'junit:junit:4.12'
+    compile 'com.alibaba:fastjson:1.1.43.android'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
+
 }
+
+
 apt {
     arguments {
         androidManifestFile variant.outputs[0].processResources.manifestFile
-        resourcePackageName 'com.frankfann.im'
+        resourcePackageName 'com.frankfancode.im'
     }
 }
