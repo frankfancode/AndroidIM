@@ -6,6 +6,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -124,7 +128,7 @@ public class ChatServer extends WebSocketServer {
 			return;
 		}
 		Chat chatResponse;
-		if (ChatCommand.TEXT.equals(chatRequest.command)) {
+		if (ChatCommand.CHAT_TEXT.equals(chatRequest.command)) {
 			WebSocket pairWebSocket = getSocketByUserId(chatRequest.sendto);
 			if (pairWebSocket != null) {
 				chatResponse = chatRequest;
@@ -193,6 +197,32 @@ public class ChatServer extends WebSocketServer {
 			
 			
 			sendChat(conn, chatResponse);
+		}else if(ChatCommand.CHAT_ADD.equals(chatRequest.command)){
+			
+			try{
+	            //调用Class.forName()方法加载驱动程序
+	            Class.forName("com.mysql.jdbc.Driver");
+	            System.out.println("成功加载MySQL驱动！");
+	        }catch(ClassNotFoundException e1){
+	            System.out.println("找不到MySQL驱动!");
+	            e1.printStackTrace();
+	        }
+	        
+	        String url="jdbc:mysql://45.32.33.193:3306/mysql";    //JDBC的URL    
+	        //调用DriverManager对象的getConnection()方法，获得一个Connection对象
+	        Connection dbconn;
+	        try {
+	        	dbconn = DriverManager.getConnection(url,    "root","");
+	            //创建一个Statement对象
+	            Statement stmt = dbconn.createStatement(); //创建Statement对象
+	            System.out.print("成功连接到数据库！");
+	            stmt.close();
+	            conn.close();
+	        } catch (SQLException e){
+	            e.printStackTrace();
+	        }
+			
+			
 		}
 
 		// this.sendToAll( message );
@@ -223,7 +253,7 @@ public class ChatServer extends WebSocketServer {
 	public static void main(String[] args) throws InterruptedException,
 			IOException {
 		WebSocketImpl.DEBUG = true;
-		int port = 8887; // 843 flash policy port
+		int port = 8610; // 843 flash policy port
 		try {
 			port = Integer.parseInt(args[0]);
 		} catch (Exception ex) {
