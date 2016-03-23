@@ -17,3 +17,6 @@ socket 和 WebSocket 区别 [这里](http://zengrong.net/post/2199.htm)
 * 网络连接用了 [Volley] (https://github.com/mcxiaoke/android-volley) 和 [OkHttp](http://square.github.io/okhttp/)
 * 事件总线 [EventBus](https://github.com/greenrobot/EventBus)
 * 图片用了 [Picasso](https://github.com/square/picasso)
+* 
+
+
